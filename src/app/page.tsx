@@ -33,21 +33,21 @@ type Note = { date: string; text: string };
 type Symptoms = z.infer<typeof symptomSchema> & { date: string };
 
 function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
-  const [storedValue, setStoredValue] = useState<T>(initialValue);
-
-  useEffect(() => {
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    if (typeof window === "undefined") {
+      return initialValue;
+    }
     try {
       const item = window.localStorage.getItem(key);
-      const parsedItem = item ? JSON.parse(item, (k, value) => {
+      return item ? JSON.parse(item, (k, value) => {
         if ((k === 'start' || k === 'end') && value) return new Date(value);
         return value;
       }) : initialValue;
-      setStoredValue(parsedItem);
     } catch (error) {
       console.error(error);
-      setStoredValue(initialValue);
+      return initialValue;
     }
-  }, [key, initialValue]);
+  });
 
 
   const setValue = (value: T) => {
@@ -113,9 +113,7 @@ export default function Home() {
 
   useEffect(() => {
     // Initialize selectedDay on the client side to avoid hydration mismatch
-    if (typeof window !== 'undefined') {
-      setSelectedDay(startOfDay(new Date()));
-    }
+    setSelectedDay(startOfDay(new Date()));
   }, []);
 
   const cycleLength = useMemo(() => {
@@ -184,7 +182,7 @@ export default function Home() {
     const daySymptoms = symptoms.find(s => s.date === dateStr);
     symptomForm.reset(daySymptoms || { mood: "neutral", cramps: 0, headaches: 0, bloating: 0, acne: 0 });
     setAiSuggestion(null);
-  }, [selectedDay, symptoms, symptomForm]);
+  }, [selectedDay, symptoms]);
 
   async function onSymptomSubmit(values: z.infer<typeof symptomSchema>) {
     if (!selectedDay) return;
