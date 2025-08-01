@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -34,7 +35,7 @@ type Note = { date: string; text: string };
 type Symptoms = z.infer<typeof symptomSchema> & { date: string };
 
 function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
-  const [storedValue, setStoredValue] = useState<T>(() => initialValue);
+  const [storedValue, setStoredValue] = useState<T>(initialValue);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -77,7 +78,7 @@ const symptomSchema = z.object({
   acne: z.number().min(0).max(4),
 });
 
-const Header = ({ onClear }: { onClear: () => void }) => (
+const Header = () => (
   <header className="flex items-center justify-between p-4 border-b bg-card">
     <div className="flex items-center gap-3">
       <div className="p-2 rounded-full bg-primary/20">
@@ -89,25 +90,6 @@ const Header = ({ onClear }: { onClear: () => void }) => (
       <Button variant="outline" onClick={() => window.open('/export', '_blank')}>
         <FileDown className="mr-2 h-4 w-4" /> Download PDF
       </Button>
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button variant="destructive" size="icon">
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete all your cycle, symptom, and note data from this browser.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={onClear}>Yes, delete everything</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   </header>
 );
@@ -211,7 +193,7 @@ export default function Home() {
     const daySymptoms = symptoms.find(s => s.date === dateStr);
     symptomForm.reset(daySymptoms || { mood: "neutral", cramps: 0, headaches: 0, bloating: 0, acne: 0 });
     setAiSuggestion(null);
-  }, [selectedDay, symptoms, symptomForm]);
+  }, [selectedDay, symptoms]);
 
   async function onSymptomSubmit(values: z.infer<typeof symptomSchema>) {
     if (!selectedDay) return;
@@ -249,7 +231,7 @@ export default function Home() {
   if (!selectedDay) {
     return (
       <div className="flex flex-col h-screen bg-background text-foreground">
-        <Header onClear={handleClearAllData}/>
+        <Header />
         <main className="flex-1 flex items-center justify-center">
           <div>Loading...</div>
         </main>
@@ -259,7 +241,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
-      <Header onClear={handleClearAllData} />
+      <Header />
       <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto">
           <div className="lg:col-span-2">
@@ -290,7 +272,28 @@ export default function Home() {
                 <div className="flex flex-col gap-4 p-4 border-t lg:border-t-0 lg:border-l w-full lg:w-64 flex-shrink-0">
                     <h3 className="font-bold font-headline">Add Period</h3>
                     <p className="text-sm text-muted-foreground">Select a start and end date on the calendar.</p>
-                    <Button onClick={handleAddPeriod} disabled={!periodRange?.from || !periodRange?.to}>Save Period</Button>
+                    <div className="flex gap-2">
+                      <Button onClick={handleAddPeriod} disabled={!periodRange?.from || !periodRange?.to} className="flex-1">Save Period</Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="icon">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will permanently delete all your cycle, symptom, and note data from this browser.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleClearAllData}>Yes, delete everything</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                     <Separator />
                     <h3 className="font-bold font-headline">Legend</h3>
                     <div className="space-y-2 text-sm">
