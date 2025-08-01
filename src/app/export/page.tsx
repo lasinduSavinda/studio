@@ -1,7 +1,8 @@
+
 "use client";
 
 import { useEffect, useState, useRef } from 'react';
-import { format } from 'date-fns';
+import { format, startOfDay } from 'date-fns';
 import { Moon } from 'lucide-react';
 
 type Cycle = { start: Date; end: Date };
@@ -58,7 +59,7 @@ export default function ExportPage() {
       ...cycles.flatMap(c => {
           const dates = [];
           for (let d = new Date(c.start); d <= new Date(c.end); d.setDate(d.getDate() + 1)) {
-              dates.push(format(d, 'yyyy-MM-dd'));
+              dates.push(format(new Date(d), 'yyyy-MM-dd'));
           }
           return dates;
       }),
