@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
@@ -14,7 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from "@/hooks/use-toast";
 import { symptomAnalyzer, type SymptomAnalyzerInput } from '@/ai/flows/symptom-analyzer';
-import { Bell, Droplets, FileDown, HeartPulse, Moon, Sparkles, Stethoscope, StickyNote } from 'lucide-react';
+import { Bell, Droplets, FileDown, HeartPulse, Moon, Sparkles, Stethoscope, StickyNote, Trash2 } from 'lucide-react';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -33,14 +34,9 @@ type Note = { date: string; text: string };
 type Symptoms = z.infer<typeof symptomSchema> & { date: string };
 
 function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    // This function is only called on the initial render.
-    // We can't access window here on the server.
-    return initialValue;
-  });
+  const [storedValue, setStoredValue] = useState<T>(() => initialValue);
 
   useEffect(() => {
-    // This runs only on the client.
     if (typeof window === "undefined") {
       return;
     }
@@ -55,7 +51,6 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => voi
       console.error(error);
       setStoredValue(initialValue);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 
 
@@ -82,7 +77,7 @@ const symptomSchema = z.object({
   acne: z.number().min(0).max(4),
 });
 
-const Header = () => (
+const Header = ({ onClear }: { onClear: () => void }) => (
   <header className="flex items-center justify-between p-4 border-b bg-card">
     <div className="flex items-center gap-3">
       <div className="p-2 rounded-full bg-primary/20">
@@ -90,9 +85,30 @@ const Header = () => (
       </div>
       <h1 className="text-2xl font-bold font-headline text-foreground">LunaCycle</h1>
     </div>
-    <Button variant="outline" onClick={() => window.open('/export', '_blank')}>
-      <FileDown className="mr-2 h-4 w-4" /> Download PDF
-    </Button>
+    <div className="flex items-center gap-2">
+      <Button variant="outline" onClick={() => window.open('/export', '_blank')}>
+        <FileDown className="mr-2 h-4 w-4" /> Download PDF
+      </Button>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button variant="destructive" size="icon">
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete all your cycle, symptom, and note data from this browser.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={onClear}>Yes, delete everything</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   </header>
 );
 
@@ -163,6 +179,24 @@ export default function Home() {
     }
   };
 
+  const handleClearAllData = () => {
+    setCycles([]);
+    setNotes([]);
+    setSymptoms([]);
+    setReminders({ period: true, ovulation: true });
+    // To ensure all states are reset, we can also remove from local storage directly
+    // and then reload the page for a clean slate.
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem('cycles');
+      window.localStorage.removeItem('notes');
+      window.localStorage.removeItem('symptoms');
+      window.localStorage.removeItem('reminders');
+      window.location.reload();
+    }
+    toast({ title: "Data Cleared", description: "All your data has been removed." });
+  };
+
+
   const [aiSuggestion, setAiSuggestion] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
@@ -215,7 +249,7 @@ export default function Home() {
   if (!selectedDay) {
     return (
       <div className="flex flex-col h-screen bg-background text-foreground">
-        <Header />
+        <Header onClear={handleClearAllData}/>
         <main className="flex-1 flex items-center justify-center">
           <div>Loading...</div>
         </main>
@@ -225,7 +259,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
-      <Header />
+      <Header onClear={handleClearAllData} />
       <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto">
           <div className="lg:col-span-2">
