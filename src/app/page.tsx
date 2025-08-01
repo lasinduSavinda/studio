@@ -33,9 +33,14 @@ type Note = { date: string; text: string };
 type Symptoms = z.infer<typeof symptomSchema> & { date: string };
 
 function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
-  const [storedValue, setStoredValue] = useState<T>(initialValue);
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    // This function is only called on the initial render.
+    // We can't access window here on the server.
+    return initialValue;
+  });
 
   useEffect(() => {
+    // This runs only on the client.
     if (typeof window === "undefined") {
       return;
     }
@@ -50,7 +55,8 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => voi
       console.error(error);
       setStoredValue(initialValue);
     }
-  }, [key, initialValue]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
 
 
   const setValue = (value: T) => {
@@ -171,7 +177,7 @@ export default function Home() {
     const daySymptoms = symptoms.find(s => s.date === dateStr);
     symptomForm.reset(daySymptoms || { mood: "neutral", cramps: 0, headaches: 0, bloating: 0, acne: 0 });
     setAiSuggestion(null);
-  }, [selectedDay, symptoms]);
+  }, [selectedDay, symptoms, symptomForm]);
 
   async function onSymptomSubmit(values: z.infer<typeof symptomSchema>) {
     if (!selectedDay) return;
