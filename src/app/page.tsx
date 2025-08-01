@@ -33,21 +33,22 @@ type Note = { date: string; text: string };
 type Symptoms = z.infer<typeof symptomSchema> & { date: string };
 
 function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    if (typeof window === "undefined") {
-      return initialValue;
-    }
+  const [storedValue, setStoredValue] = useState<T>(initialValue);
+
+  useEffect(() => {
     try {
       const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item, (k, value) => {
+      const parsedItem = item ? JSON.parse(item, (k, value) => {
         if ((k === 'start' || k === 'end') && value) return new Date(value);
         return value;
       }) : initialValue;
+      setStoredValue(parsedItem);
     } catch (error) {
       console.error(error);
-      return initialValue;
+      setStoredValue(initialValue);
     }
-  });
+  }, [key, initialValue]);
+
 
   const setValue = (value: T) => {
     try {
@@ -105,10 +106,14 @@ export default function Home() {
   const [symptoms, setSymptoms] = useLocalStorage<Symptoms[]>('symptoms', []);
   const [reminders, setReminders] = useLocalStorage('reminders', { period: true, ovulation: true });
 
-  const [selectedDay, setSelectedDay] = useState<Date>(startOfDay(new Date()));
+  const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined);
   const [periodRange, setPeriodRange] = useState<DateRange | undefined>(undefined);
   
   const { toast } = useToast();
+
+  useEffect(() => {
+    setSelectedDay(startOfDay(new Date()));
+  }, []);
 
   const cycleLength = useMemo(() => {
     if (cycles.length < 2) return 28;
@@ -150,8 +155,9 @@ export default function Home() {
     }
   };
 
-  const selectedNote = notes.find(n => n.date === format(selectedDay, 'yyyy-MM-dd'))?.text || '';
+  const selectedNote = selectedDay ? notes.find(n => n.date === format(selectedDay, 'yyyy-MM-dd'))?.text || '' : '';
   const handleNoteChange = (text: string) => {
+    if (!selectedDay) return;
     const dateStr = format(selectedDay, 'yyyy-MM-dd');
     const otherNotes = notes.filter(n => n.date !== dateStr);
     if (text) {
@@ -170,6 +176,7 @@ export default function Home() {
   });
 
   useEffect(() => {
+    if (!selectedDay) return;
     const dateStr = format(selectedDay, 'yyyy-MM-dd');
     const daySymptoms = symptoms.find(s => s.date === dateStr);
     symptomForm.reset(daySymptoms || { mood: "neutral", cramps: 0, headaches: 0, bloating: 0, acne: 0 });
@@ -177,6 +184,7 @@ export default function Home() {
   }, [selectedDay, symptoms, symptomForm]);
 
   async function onSymptomSubmit(values: z.infer<typeof symptomSchema>) {
+    if (!selectedDay) return;
     const dateStr = format(selectedDay, 'yyyy-MM-dd');
     const otherSymptoms = symptoms.filter(s => s.date !== dateStr);
     setSymptoms([...otherSymptoms, { date: dateStr, ...values }]);
@@ -207,6 +215,17 @@ export default function Home() {
     { value: 'sad', label: '😢 Sad' }, { value: 'anxious', label: '😟 Anxious' }, { value: 'irritable', label: '😠 Irritable' },
   ];
   const sliderLabels = ['None', 'Mild', 'Moderate', 'Severe', 'Very Severe'];
+
+  if (!selectedDay) {
+    return (
+      <div className="flex flex-col h-screen bg-background text-foreground">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <div>Loading...</div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
