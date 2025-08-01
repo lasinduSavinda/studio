@@ -9,6 +9,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 
 const SymptomAnalyzerInputSchema = z.object({
@@ -33,6 +34,7 @@ const symptomAnalyzerPrompt = ai.definePrompt({
   name: 'symptomAnalyzerPrompt',
   input: {schema: SymptomAnalyzerInputSchema},
   output: {schema: SymptomAnalyzerOutputSchema},
+  model: googleAI.model('gemini-pro'),
   prompt: `You are a helpful assistant designed to analyze user-reported symptoms and suggest potential causes or related conditions.
 
   Based on the following symptoms, provide suggestions for potential causes or related conditions.
