@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import type { DateRange } from 'react-day-picker';
 import { addDays, format, isWithinInterval, startOfDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -112,7 +112,10 @@ export default function Home() {
   const { toast } = useToast();
 
   useEffect(() => {
-    setSelectedDay(startOfDay(new Date()));
+    // Initialize selectedDay on the client side to avoid hydration mismatch
+    if (typeof window !== 'undefined') {
+      setSelectedDay(startOfDay(new Date()));
+    }
   }, []);
 
   const cycleLength = useMemo(() => {
