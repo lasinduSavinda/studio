@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { format } from 'date-fns';
 import { Moon } from 'lucide-react';
 
@@ -30,6 +30,7 @@ export default function ExportPage() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [symptoms, setSymptoms] = useState<Symptoms[]>([]);
   const [isReady, setIsReady] = useState(false);
+  const printTriggered = useRef(false);
 
   useEffect(() => {
     setCycles(loadFromStorage('cycles', []));
@@ -39,8 +40,13 @@ export default function ExportPage() {
   }, []);
   
   useEffect(() => {
-    if (isReady) {
-      setTimeout(() => window.print(), 500);
+    if (isReady && !printTriggered.current) {
+      printTriggered.current = true;
+      // Timeout to ensure content is rendered before printing
+      setTimeout(() => {
+        window.print();
+        window.close();
+      }, 500);
     }
   }, [isReady]);
 
@@ -58,7 +64,7 @@ export default function ExportPage() {
       }),
       ...notes.map(n => n.date),
       ...symptoms.map(s => s.date)
-  ])].sort();
+  ])].sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
   const symptomLabels = ['None', 'Mild', 'Moderate', 'Severe', 'Very Severe'];
 
@@ -66,9 +72,16 @@ export default function ExportPage() {
     <div className="p-8 font-sans">
         <style type="text/css" media="print">
         {`
-            @page { size: auto; margin: 0.5in; }
-            body { -webkit-print-color-adjust: exact; }
+            @page { 
+              size: A4 portrait; 
+              margin: 1cm;
+            }
+            body { 
+              -webkit-print-color-adjust: exact; 
+              print-color-adjust: exact;
+            }
             .no-break { page-break-inside: avoid; }
+            .page-break { page-break-before: always; }
         `}
         </style>
         <header className="flex items-center justify-between mb-8 pb-4 border-b border-gray-300 no-break">
@@ -85,17 +98,17 @@ export default function ExportPage() {
                  <table className="w-full border-collapse text-left">
                     <thead>
                         <tr className="bg-gray-100">
-                            <th className="p-2 border">Start Date</th>
-                            <th className="p-2 border">End Date</th>
-                            <th className="p-2 border">Duration</th>
+                            <th className="p-2 border border-gray-300">Start Date</th>
+                            <th className="p-2 border border-gray-300">End Date</th>
+                            <th className="p-2 border border-gray-300">Duration</th>
                         </tr>
                     </thead>
                     <tbody>
                         {cycles.map((cycle, index) => (
-                            <tr key={index} className="border">
-                                <td className="p-2 border">{format(cycle.start, 'MMM d, yyyy')}</td>
-                                <td className="p-2 border">{format(cycle.end, 'MMM d, yyyy')}</td>
-                                <td className="p-2 border">{(cycle.end.getTime() - cycle.start.getTime()) / (1000 * 3600 * 24) + 1} days</td>
+                            <tr key={index} className="border-b border-gray-200">
+                                <td className="p-2 border border-gray-300">{format(cycle.start, 'MMM d, yyyy')}</td>
+                                <td className="p-2 border border-gray-300">{format(cycle.end, 'MMM d, yyyy')}</td>
+                                <td className="p-2 border border-gray-300">{(cycle.end.getTime() - cycle.start.getTime()) / (1000 * 3600 * 24) + 1} days</td>
                             </tr>
                         ))}
                     </tbody>
@@ -103,38 +116,43 @@ export default function ExportPage() {
             ) : <p>No cycle history recorded.</p>}
         </section>
         
-        <section>
+        <section className="page-break">
              <h2 className="text-2xl font-bold mb-4 text-gray-700">Daily Log</h2>
-             <div className="space-y-6">
+             <div className="space-y-4">
                 {allDates.map((dateStr) => {
                     const date = new Date(dateStr + 'T12:00:00'); // Use noon to avoid timezone issues
-                    const cycle = cycles.find(c => date >= c.start && date <= c.end);
+                    const cycle = cycles.find(c => {
+                      const start = startOfDay(c.start);
+                      const end = startOfDay(c.end);
+                      const checkDate = startOfDay(date);
+                      return checkDate >= start && checkDate <= end;
+                    });
                     const note = notes.find(n => n.date === dateStr);
                     const symptom = symptoms.find(s => s.date === dateStr);
                     if (!cycle && !note && !symptom) return null;
 
                     return (
-                        <div key={dateStr} className="p-4 border border-gray-200 rounded-lg no-break">
-                            <h3 className="font-bold text-lg mb-2 flex justify-between">
+                        <div key={dateStr} className="p-4 border border-gray-200 rounded-lg no-break bg-white">
+                            <h3 className="font-bold text-lg mb-2 flex justify-between items-center">
                                 <span>{format(date, 'EEEE, MMMM d, yyyy')}</span>
-                                {cycle && <span className="text-sm font-normal bg-pink-200 text-pink-800 px-2 py-0.5 rounded-full">Period Day</span>}
+                                {cycle && <span className="text-sm font-normal bg-pink-100 text-pink-800 px-2 py-0.5 rounded-full">Period Day</span>}
                             </h3>
                             {symptom && (
                                 <div className="mb-2">
-                                    <h4 className="font-semibold mb-1">Symptoms:</h4>
-                                    <ul className="list-disc list-inside text-sm text-gray-700">
-                                        <li>Mood: {symptom.mood}</li>
-                                        <li>Cramps: {symptomLabels[symptom.cramps]}</li>
-                                        <li>Headaches: {symptomLabels[symptom.headaches]}</li>
-                                        <li>Bloating: {symptomLabels[symptom.bloating]}</li>
-                                        <li>Acne: {symptomLabels[symptom.acne]}</li>
+                                    <h4 className="font-semibold mb-1 text-gray-800">Symptoms:</h4>
+                                    <ul className="list-disc list-inside text-sm text-gray-700 pl-4">
+                                        <li><span className="font-medium">Mood:</span> {symptom.mood}</li>
+                                        <li><span className="font-medium">Cramps:</span> {symptomLabels[symptom.cramps]}</li>
+                                        <li><span className="font-medium">Headaches:</span> {symptomLabels[symptom.headaches]}</li>
+                                        <li><span className="font-medium">Bloating:</span> {symptomLabels[symptom.bloating]}</li>
+                                        <li><span className="font-medium">Acne:</span> {symptomLabels[symptom.acne]}</li>
                                     </ul>
                                 </div>
                             )}
                             {note && (
                                 <div>
-                                    <h4 className="font-semibold mb-1">Note:</h4>
-                                    <p className="text-sm text-gray-700 whitespace-pre-wrap">{note.text}</p>
+                                    <h4 className="font-semibold mb-1 text-gray-800">Note:</h4>
+                                    <p className="text-sm text-gray-700 whitespace-pre-wrap pl-4">{note.text}</p>
                                 </div>
                             )}
                         </div>

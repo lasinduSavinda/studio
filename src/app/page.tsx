@@ -33,21 +33,24 @@ type Note = { date: string; text: string };
 type Symptoms = z.infer<typeof symptomSchema> & { date: string };
 
 function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
-  const [storedValue, setStoredValue] = useState<T>(() => {
+  const [storedValue, setStoredValue] = useState<T>(initialValue);
+
+  useEffect(() => {
     if (typeof window === "undefined") {
-      return initialValue;
+      return;
     }
     try {
       const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item, (k, value) => {
+      const value = item ? JSON.parse(item, (k, value) => {
         if ((k === 'start' || k === 'end') && value) return new Date(value);
         return value;
       }) : initialValue;
+      setStoredValue(value);
     } catch (error) {
       console.error(error);
-      return initialValue;
+      setStoredValue(initialValue);
     }
-  });
+  }, [key, initialValue]);
 
 
   const setValue = (value: T) => {
@@ -81,22 +84,9 @@ const Header = () => (
       </div>
       <h1 className="text-2xl font-bold font-headline text-foreground">LunaCycle</h1>
     </div>
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline"><FileDown className="mr-2 h-4 w-4" /> Export Data</Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Export Your Cycle Data</DialogTitle>
-          <CardDescription>
-            This will open a new tab with your cycle history, symptoms, and notes in a printer-friendly format. Use your browser's "Print to PDF" option to save the file.
-          </CardDescription>
-        </DialogHeader>
-        <Button onClick={() => window.open('/export', '_blank')} className="mt-4">
-          Open Printable View
-        </Button>
-      </DialogContent>
-    </Dialog>
+    <Button variant="outline" onClick={() => window.open('/export', '_blank')}>
+      <FileDown className="mr-2 h-4 w-4" /> Download PDF
+    </Button>
   </header>
 );
 
@@ -112,7 +102,6 @@ export default function Home() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Initialize selectedDay on the client side to avoid hydration mismatch
     setSelectedDay(startOfDay(new Date()));
   }, []);
 
