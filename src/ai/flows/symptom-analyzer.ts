@@ -34,7 +34,7 @@ const symptomAnalyzerPrompt = ai.definePrompt({
   name: 'symptomAnalyzerPrompt',
   input: {schema: SymptomAnalyzerInputSchema},
   output: {schema: SymptomAnalyzerOutputSchema},
-  model: googleAI.model('gemini-pro'),
+  model: googleAI.model('gemini-1.5-flash-latest'),
   prompt: `You are a helpful assistant designed to analyze user-reported symptoms and suggest potential causes or related conditions.
 
   Based on the following symptoms, provide suggestions for potential causes or related conditions.
