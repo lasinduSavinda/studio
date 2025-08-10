@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { format, startOfDay, addDays, getDaysInMonth, startOfMonth, getDay, eachMonthOfInterval, startOfYear, endOfYear, isSameMonth } from 'date-fns';
 import { Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -166,24 +166,38 @@ export default function ExportPage() {
   const cycleCalcs = useCycleCalculations(cycles, userCycleLength);
 
   const monthsToRender = useMemo(() => {
-    if (cycles.length === 0) return [];
-    const firstDate = cycles[0].start;
-    const lastDate = cycles[cycles.length-1].end;
+    if (cycles.length === 0 && notes.length === 0 && symptoms.length === 0) return [];
+    
+    const allDatesWithData = [
+        ...cycles.flatMap(c => [new Date(c.start), new Date(c.end)]),
+        ...notes.map(n => new Date(n.date)),
+        ...symptoms.map(s => new Date(s.date)),
+    ].filter(d => !isNaN(d.getTime()));
+
+    if (allDatesWithData.length === 0) return [];
+
+    const firstDate = new Date(Math.min(...allDatesWithData.map(d => d.getTime())));
+    const lastDate = new Date(Math.max(...allDatesWithData.map(d => d.getTime())));
+    
     return eachMonthOfInterval({
         start: startOfYear(firstDate),
         end: endOfYear(lastDate)
     }).filter(month => {
-      const allDatesInMonth = [...cycles.flatMap(c => {
-          const dates = [];
-          for (let d = new Date(c.start); d <= new Date(c.end); d.setDate(d.getDate() + 1)) {
-              dates.push(new Date(d));
-          }
-          return dates;
-      }), ...notes.map(n => new Date(n.date)), ...symptoms.map(s => new Date(s.date))];
+        const allDatesInMonth = [
+            ...cycles.flatMap(c => {
+                const dates = [];
+                for (let d = new Date(c.start); d <= new Date(c.end); d.setDate(d.getDate() + 1)) {
+                    dates.push(startOfDay(d));
+                }
+                return dates;
+            }),
+            ...notes.map(n => startOfDay(new Date(n.date))),
+            ...symptoms.map(s => startOfDay(new Date(s.date)))
+        ].filter(d => !isNaN(d.getTime()));
 
-      return allDatesInMonth.some(d => isSameMonth(d, month));
+        return allDatesInMonth.some(d => isSameMonth(d, month));
     });
-  }, [cycles, notes, symptoms]);
+}, [cycles, notes, symptoms]);
 
   if (!isReady) {
     return <div className="p-8">Loading your data for export...</div>;
@@ -253,5 +267,3 @@ export default function ExportPage() {
     </div>
   );
 }
-
-    
