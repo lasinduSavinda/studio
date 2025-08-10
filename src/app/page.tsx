@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
@@ -36,13 +36,11 @@ type Symptoms = z.infer<typeof symptomSchema> & { date: string };
 
 function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
   const [storedValue, setStoredValue] = useState<T>(() => {
-    // We can't access window on the server, so we return the initial value.
     if (typeof window === "undefined") {
       return initialValue;
     }
     try {
       const item = window.localStorage.getItem(key);
-      // Parse stored json or if none return initialValue
       return item ? JSON.parse(item, (k, value) => {
         if ((k === 'start' || k === 'end') && value) return new Date(value);
         return value;
@@ -66,16 +64,18 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => voi
   };
 
   useEffect(() => {
-    try {
-      const item = window.localStorage.getItem(key);
-      if (item) {
-        setStoredValue(JSON.parse(item, (k, value) => {
-          if ((k === 'start' || k === 'end') && value) return new Date(value);
-          return value;
-        }));
-      }
-    } catch (error) {
-      console.error(error);
+    if (typeof window !== 'undefined') {
+        try {
+            const item = window.localStorage.getItem(key);
+            if (item) {
+                setStoredValue(JSON.parse(item, (k, value) => {
+                    if ((k === 'start' || k === 'end') && value) return new Date(value);
+                    return value;
+                }));
+            }
+        } catch (error) {
+            console.error(error);
+        }
     }
   }, [key]);
 
@@ -178,8 +178,6 @@ export default function Home() {
     setNotes([]);
     setSymptoms([]);
     setReminders({ period: true, ovulation: true });
-    // To ensure all states are reset, we can also remove from local storage directly
-    // and then reload the page for a clean slate.
     if (typeof window !== "undefined") {
       window.localStorage.removeItem('cycles');
       window.localStorage.removeItem('notes');
@@ -209,7 +207,7 @@ export default function Home() {
       symptomForm.reset({ mood: "neutral", cramps: 0, headaches: 0, bloating: 0, acne: 0 });
     }
     setAiSuggestion(null);
-  }, [selectedDay, symptoms]);
+  }, [selectedDay, symptoms, symptomForm]);
 
   async function onSymptomSubmit(values: z.infer<typeof symptomSchema>) {
     if (!selectedDay) return;
@@ -288,30 +286,33 @@ export default function Home() {
                 <div className="flex flex-col gap-4 p-4 border-t lg:border-t-0 lg:border-l w-full lg:w-64 flex-shrink-0">
                     <h3 className="font-bold font-headline">Add Period</h3>
                     <p className="text-sm text-muted-foreground">Select a start and end date on the calendar.</p>
-                    <div className="flex gap-2">
-                      <Button onClick={handleAddPeriod} disabled={!periodRange?.from || !periodRange?.to} className="flex-1">Save Period</Button>
-                      <Button variant="outline" size="icon" onClick={() => window.open('/export', '_blank')}>
-                          <FileDown className="h-4 w-4" />
-                      </Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="destructive" size="icon">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This action cannot be undone. This will permanently delete all your cycle, symptom, and note data from this browser.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleClearAllData}>Yes, delete everything</AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                    <div className="flex flex-col gap-2">
+                      <Button onClick={handleAddPeriod} disabled={!periodRange?.from || !periodRange?.to}>Save Period</Button>
+                      <div className="flex gap-2">
+                        <Button variant="outline" onClick={() => window.open('/export', '_blank')} className="flex-1">
+                            <FileDown className="h-4 w-4 mr-2" />
+                            Download PDF
+                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="destructive" size="icon">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete all your cycle, symptom, and note data from this browser.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={handleClearAllData}>Yes, delete everything</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
                     </div>
                     <Separator />
                     <h3 className="font-bold font-headline">Legend</h3>
@@ -381,3 +382,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
