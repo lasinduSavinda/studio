@@ -174,7 +174,7 @@ const OnboardingWizard = ({ onComplete }: { onComplete: (cycles: Cycle[], cycleL
 const TrackerView = ({ 
     menstruationDays,
     fertileDays,
-    ovulationDay,
+    ovulationDays,
     lutealDays,
     predictedPeriod,
     selectedDay,
@@ -182,7 +182,7 @@ const TrackerView = ({
  } : {
     menstruationDays: Date[],
     fertileDays: Date[],
-    ovulationDay?: Date,
+    ovulationDays: Date[],
     lutealDays: Date[],
     predictedPeriod: Date[],
     selectedDay?: Date,
@@ -206,7 +206,7 @@ const TrackerView = ({
 
         if (menstruationDays.some(d => format(d, 'yyyy-MM-dd') === dateStr)) props.className = cn(props.className, 'bg-pink-500 text-white');
         else if (predictedPeriod.some(d => format(d, 'yyyy-MM-dd') === dateStr)) props.className = cn(props.className, 'bg-pink-300 text-white');
-        else if (ovulationDay && format(ovulationDay, 'yyyy-MM-dd') === dateStr) props.className = cn(props.className, 'bg-purple-500 text-white');
+        else if (ovulationDays.some(d => format(d, 'yyyy-MM-dd') === dateStr)) props.className = cn(props.className, 'bg-purple-500 text-white');
         else if (fertileDays.some(d => format(d, 'yyyy-MM-dd') === dateStr)) props.className = cn(props.className, 'bg-yellow-400 text-yellow-800');
         else if (lutealDays.some(d => format(d, 'yyyy-MM-dd') === dateStr)) props.className = cn(props.className, 'bg-green-500 text-white');
 
@@ -266,10 +266,10 @@ const TrackerView = ({
                 <div className="flex justify-between items-center">
                     <CardTitle>Your Tracker</CardTitle>
                     <div className="flex items-center gap-4 text-sm">
-                        <Button onClick={() => setCurrentMonth(subMonths(currentMonth, 3))}>
+                        <Button onClick={() => setCurrentMonth(subMonths(currentMonth, 3))} className="bg-[#f0428d] hover:bg-[#d03878] text-white">
                             <ChevronLeft className="mr-2 h-4 w-4" /> Previous 3 Months
                         </Button>
-                        <Button onClick={() => setCurrentMonth(addMonths(currentMonth, 3))}>
+                        <Button onClick={() => setCurrentMonth(addMonths(currentMonth, 3))} className="bg-[#f0428d] hover:bg-[#d03878] text-white">
                              Next 3 Months <ChevronRight className="ml-2 h-4 w-4" />
                         </Button>
                     </div>
@@ -313,37 +313,65 @@ export default function Home() {
     return Math.round(lengths.reduce((a, b) => a + b, 0) / lengths.length);
   }, [cycles, userCycleLength]);
 
-  const { menstruationDays, fertileDays, ovulationDay, predictedPeriod, lutealDays } = useMemo(() => {
+  const { menstruationDays, fertileDays, ovulationDays, predictedPeriod, lutealDays } = useMemo(() => {
     const menstruationDays = cycles.flatMap(c => {
-      const dates = [];
-      for (let d = startOfDay(new Date(c.start)); d <= startOfDay(new Date(c.end)); d = addDays(d, 1)) {
-        dates.push(d);
-      }
-      return dates;
+        const dates = [];
+        for (let d = startOfDay(new Date(c.start)); d <= startOfDay(new Date(c.end)); d = addDays(d, 1)) {
+            dates.push(d);
+        }
+        return dates;
     });
 
-    let fertileDays: Date[] = [];
-    let ovulationDay: Date | undefined;
-    let predictedPeriod: Date[] = [];
-    let lutealDays: Date[] = [];
+    const allFertileDays: Date[] = [];
+    const allOvulationDays: Date[] = [];
+    const allPredictedPeriods: Date[] = [];
+    const allLutealDays: Date[] = [];
 
-    const lastCycle = cycles.length > 0 ? cycles[cycles.length - 1] : undefined;
+    const lastCycle = cycles.length > 0 ? cycles[cycles.length - 1] : null;
     if (lastCycle) {
-      const nextCycleStart = addDays(lastCycle.start, cycleLength);
-      ovulationDay = addDays(nextCycleStart, -14);
-      fertileDays = Array.from({ length: 6 }, (_, i) => addDays(ovulationDay!, i - 4));
-      predictedPeriod = Array.from({ length: 5 }, (_, i) => addDays(nextCycleStart, i));
-      if (ovulationDay) {
-        let day = addDays(ovulationDay, 1);
-        while (day < nextCycleStart) {
-            lutealDays.push(day);
-            day = addDays(day, 1);
+        // Generate predictions for -6 to +6 months from last cycle start
+        for (let i = -6; i <= 6; i++) {
+            const cycleStartDate = addDays(lastCycle.start, i * cycleLength);
+
+            // Skip if this predicted cycle overlaps with a logged one
+            const overlapsWithLogged = cycles.some(c =>
+                cycleStartDate >= addDays(c.start, -7) && cycleStartDate <= addDays(c.end, 7)
+            );
+            if (i <= 0 && overlapsWithLogged) continue;
+
+
+            const ovulationDay = addDays(cycleStartDate, cycleLength - 14);
+            const fertileStart = addDays(ovulationDay, -5);
+            const fertileEnd = addDays(ovulationDay, 0);
+            
+            for (let d = fertileStart; d <= fertileEnd; d = addDays(d, 1)) {
+                allFertileDays.push(d);
+            }
+            
+            allOvulationDays.push(ovulationDay);
+
+            const periodStart = cycleStartDate;
+            const periodEnd = addDays(periodStart, 4); // Assuming 5 day period
+            for (let d = periodStart; d <= periodEnd; d = addDays(d, 1)) {
+                allPredictedPeriods.push(d);
+            }
+            
+            const lutealStart = addDays(ovulationDay, 1);
+            const lutealEnd = addDays(cycleStartDate, cycleLength -1);
+            for (let d = lutealStart; d <= lutealEnd; d = addDays(d, 1)) {
+                 allLutealDays.push(d);
+            }
         }
-      }
     }
 
-    return { menstruationDays, fertileDays, ovulationDay, predictedPeriod, lutealDays };
-  }, [cycles, cycleLength]);
+    return { 
+        menstruationDays, 
+        fertileDays: allFertileDays, 
+        ovulationDays: allOvulationDays,
+        predictedPeriod: allPredictedPeriods, 
+        lutealDays: allLutealDays
+    };
+}, [cycles, cycleLength]);
 
   const handleAddPeriod = () => {
     if (selectedDay) {
@@ -464,7 +492,7 @@ export default function Home() {
             <TrackerView 
                 menstruationDays={menstruationDays}
                 fertileDays={fertileDays}
-                ovulationDay={ovulationDay}
+                ovulationDays={ovulationDays}
                 lutealDays={lutealDays}
                 predictedPeriod={predictedPeriod}
                 selectedDay={selectedDay}
@@ -477,9 +505,9 @@ export default function Home() {
                 </CardHeader>
                 <CardContent className="flex flex-col sm:flex-row gap-4">
                     <Button onClick={handleAddPeriod} disabled={!selectedDay} className="flex-1">Log Period Start</Button>
-                    <Button variant="outline" onClick={() => window.open('/export', '_blank')} className="flex-1">
+                    <Button variant="outline" onClick={() => window.open('/export', '_blank')} className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90">
                         <FileDown className="h-4 w-4 mr-2" />
-                        Download Report
+                        Download PDF
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
@@ -561,6 +589,3 @@ export default function Home() {
 }
 
     
-
-
-
