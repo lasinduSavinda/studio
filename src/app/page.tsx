@@ -6,7 +6,7 @@ import type { DateRange } from 'react-day-picker';
 import { addDays, format, isWithinInterval, startOfDay, addMonths, subMonths, getDaysInMonth, startOfMonth, getDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
@@ -252,6 +252,14 @@ const TrackerView = ({
         )
     };
 
+    const legendItems = [
+      { label: "Period", color: "bg-pink-500" },
+      { label: "Predicted", color: "bg-pink-300" },
+      { label: "Fertile", color: "bg-yellow-400" },
+      { label: "Ovulation", color: "bg-purple-500" },
+      { label: "Luteal", color: "bg-green-500" },
+    ];
+
     return (
         <Card className="shadow-lg">
             <CardHeader>
@@ -270,6 +278,14 @@ const TrackerView = ({
             <CardContent className="flex flex-col lg:flex-row gap-4 p-4">
                 {monthsToDisplay.map(month => renderMonth(month))}
             </CardContent>
+             <CardFooter className="flex flex-wrap gap-4 text-sm text-muted-foreground p-4 bg-gray-50 rounded-b-md">
+                {legendItems.map(item => (
+                    <div key={item.label} className="flex items-center gap-2">
+                        <div className={`w-4 h-4 rounded-full ${item.color}`}></div>
+                        <span>{item.label}</span>
+                    </div>
+                ))}
+            </CardFooter>
         </Card>
     )
 }
@@ -545,3 +561,4 @@ export default function Home() {
 }
 
     
+
