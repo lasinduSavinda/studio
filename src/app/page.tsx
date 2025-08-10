@@ -266,10 +266,10 @@ const TrackerView = ({
                 <div className="flex justify-between items-center">
                     <CardTitle>Your Tracker</CardTitle>
                     <div className="flex items-center gap-4 text-sm">
-                        <Button variant="ghost" onClick={() => setCurrentMonth(subMonths(currentMonth, 3))}>
+                        <Button onClick={() => setCurrentMonth(subMonths(currentMonth, 3))}>
                             <ChevronLeft className="mr-2 h-4 w-4" /> Previous 3 Months
                         </Button>
-                        <Button variant="ghost" onClick={() => setCurrentMonth(addMonths(currentMonth, 3))}>
+                        <Button onClick={() => setCurrentMonth(addMonths(currentMonth, 3))}>
                              Next 3 Months <ChevronRight className="ml-2 h-4 w-4" />
                         </Button>
                     </div>
@@ -479,7 +479,7 @@ export default function Home() {
                     <Button onClick={handleAddPeriod} disabled={!selectedDay} className="flex-1">Log Period Start</Button>
                     <Button variant="outline" onClick={() => window.open('/export', '_blank')} className="flex-1">
                         <FileDown className="h-4 w-4 mr-2" />
-                        Download PDF
+                        Download Report
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
@@ -561,5 +561,6 @@ export default function Home() {
 }
 
     
+
 
 
