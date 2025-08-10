@@ -15,7 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from "@/hooks/use-toast";
 import { symptomAnalyzer, type SymptomAnalyzerInput } from '@/ai/flows/symptom-analyzer';
-import { Bell, Droplets, FileDown, HeartPulse, Moon, Sparkles, Stethoscope, StickyNote, Trash2, Minus, Plus, CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Bell, Droplets, FileDown, HeartPulse, Moon, Sparkles, Stethoscope, StickyNote, Trash2, Minus, Plus, CalendarIcon, ChevronLeft, ChevronRight, Menu } from 'lucide-react';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/form"
 import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
@@ -85,31 +86,57 @@ const symptomSchema = z.object({
 });
 
 const Header = () => (
-  <header className="flex items-center justify-between p-4 border-b bg-card">
-    <Link href="/">
-        <div className="flex items-center gap-3 cursor-pointer">
-        <div className="p-2 rounded-full bg-primary/20">
-            <Moon className="w-6 h-6 text-primary" />
+    <header className="flex items-center justify-between p-4 border-b bg-card">
+        <Link href="/">
+            <div className="flex items-center gap-3 cursor-pointer">
+                <div className="p-2 rounded-full bg-primary/20">
+                    <Moon className="w-6 h-6 text-primary" />
+                </div>
+                <h1 className="text-xl md:text-2xl font-bold font-headline text-foreground">Free Period Tracker Online</h1>
+            </div>
+        </Link>
+        <nav className="hidden md:flex items-center gap-4">
+            <Button variant="ghost" asChild>
+                <Link href="/">Home</Link>
+            </Button>
+            <Button variant="ghost" asChild>
+                <Link href="/about">About</Link>
+            </Button>
+            <Button variant="ghost" asChild>
+                <Link href="/privacy">Privacy</Link>
+            </Button>
+            <Button variant="ghost" asChild>
+                <Link href="/contact">Contact</Link>
+            </Button>
+        </nav>
+        <div className="md:hidden">
+            <Sheet>
+                <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                        <Menu className="h-6 w-6" />
+                    </Button>
+                </SheetTrigger>
+                <SheetContent side="right">
+                    <nav className="flex flex-col gap-4 mt-8">
+                         <Button variant="ghost" asChild>
+                            <Link href="/">Home</Link>
+                        </Button>
+                        <Button variant="ghost" asChild>
+                            <Link href="/about">About</Link>
+                        </Button>
+                        <Button variant="ghost" asChild>
+                            <Link href="/privacy">Privacy</Link>
+                        </Button>
+                        <Button variant="ghost" asChild>
+                            <Link href="/contact">Contact</Link>
+                        </Button>
+                    </nav>
+                </SheetContent>
+            </Sheet>
         </div>
-        <h1 className="text-2xl font-bold font-headline text-foreground">Free Period Tracker Online</h1>
-        </div>
-    </Link>
-    <nav className="flex items-center gap-4">
-        <Button variant="ghost" asChild>
-            <Link href="/">Home</Link>
-        </Button>
-        <Button variant="ghost" asChild>
-            <Link href="/about">About</Link>
-        </Button>
-        <Button variant="ghost" asChild>
-            <Link href="/privacy">Privacy</Link>
-        </Button>
-        <Button variant="ghost" asChild>
-            <Link href="/contact">Contact</Link>
-        </Button>
-    </nav>
-  </header>
+    </header>
 );
+
 
 const OnboardingWizard = ({ onComplete }: { onComplete: (cycles: Cycle[], cycleLength: number) => void }) => {
     
@@ -128,7 +155,7 @@ const OnboardingWizard = ({ onComplete }: { onComplete: (cycles: Cycle[], cycleL
         <div className="flex flex-col h-screen bg-background text-foreground">
             <Header />
             <main className="flex-1 flex flex-col items-center justify-center p-4">
-                <Card className="w-full max-w-lg p-8">
+                <Card className="w-full max-w-lg p-4 md:p-8">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
                         <div className="flex flex-col items-center gap-2">
                             <Label className="text-sm font-normal text-muted-foreground">Date of your last period?</Label>
@@ -277,25 +304,25 @@ const TrackerView = ({
     return (
         <Card className="shadow-lg">
             <CardHeader>
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
                     <CardTitle>Your Tracker</CardTitle>
-                    <div className="flex items-center gap-4 text-sm">
-                        <Button onClick={() => setCurrentMonth(subMonths(currentMonth, 3))} className="bg-[#f0428d] hover:bg-[#d03878] text-white">
-                            <ChevronLeft className="mr-2 h-4 w-4" /> Previous 3 Months
+                    <div className="flex items-center gap-2 text-sm">
+                        <Button onClick={() => setCurrentMonth(subMonths(currentMonth, 3))} className="bg-[#f0428d] hover:bg-[#d03878] text-white text-xs px-2 h-8">
+                            <ChevronLeft className="mr-1 h-4 w-4" /> Prev 3
                         </Button>
-                        <Button onClick={() => setCurrentMonth(addMonths(currentMonth, 3))} className="bg-[#f0428d] hover:bg-[#d03878] text-white">
-                             Next 3 Months <ChevronRight className="ml-2 h-4 w-4" />
+                        <Button onClick={() => setCurrentMonth(addMonths(currentMonth, 3))} className="bg-[#f0428d] hover:bg-[#d03878] text-white text-xs px-2 h-8">
+                             Next 3 <ChevronRight className="ml-1 h-4 w-4" />
                         </Button>
                     </div>
                 </div>
             </CardHeader>
-            <CardContent className="flex flex-col lg:flex-row gap-4 p-4">
+            <CardContent className="flex flex-col lg:flex-row gap-4 p-2 md:p-4">
                 {monthsToDisplay.map(month => renderMonth(month))}
             </CardContent>
-             <CardFooter className="flex flex-wrap gap-4 text-sm text-muted-foreground p-4 bg-gray-50 rounded-b-md">
+             <CardFooter className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground p-4 bg-gray-50 rounded-b-md">
                 {legendItems.map(item => (
                     <div key={item.label} className="flex items-center gap-2">
-                        <div className={`w-4 h-4 rounded-full ${item.color}`}></div>
+                        <div className={`w-3 h-3 rounded-full ${item.color}`}></div>
                         <span>{item.label}</span>
                     </div>
                 ))}
@@ -502,7 +529,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+      <main className="flex-1 overflow-y-auto p-2 md:p-6 lg:p-8">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto">
           <div className="lg:col-span-2">
             <TrackerView 
@@ -517,7 +544,7 @@ export default function Home() {
             <Card className="mt-4">
                 <CardHeader>
                     <CardTitle>Log Your Period</CardTitle>
-                    <CardDescription>Select a start date on the calendar above and click the button to log your period.</CardDescription>
+                    <CardDescription>Select a start date on the calendar and click the button to log your period.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col sm:flex-row gap-4">
                     <Button onClick={handleAddPeriod} disabled={!selectedDay} className="flex-1">Log Period Start</Button>
@@ -566,7 +593,7 @@ export default function Home() {
                                 <FormControl>
                                   <RadioGroupItem value={opt.value} id={opt.value} className="sr-only" />
                                 </FormControl>
-                                <Label htmlFor={opt.value} className="px-3 py-1.5 border rounded-full cursor-pointer data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground transition-colors" data-state={field.value === opt.value ? 'checked' : 'unchecked'}>
+                                <Label htmlFor={opt.value} className="px-3 py-1.5 border rounded-full cursor-pointer data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground transition-colors text-xs" data-state={field.value === opt.value ? 'checked' : 'unchecked'}>
                                   {opt.label}
                                 </Label>
                               </FormItem>
