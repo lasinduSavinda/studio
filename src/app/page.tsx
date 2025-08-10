@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -35,7 +34,7 @@ import { cn } from '@/lib/utils';
 
 type Cycle = { start: Date; end: Date };
 type Note = { date: string; text: string };
-type Symptoms = z.infer<typeof symptomSchema> & { date: string };
+type Symptoms = z.infer<typeof symptomSchema> & { date: string; analysis?: string };
 
 function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
   const [storedValue, setStoredValue] = useState<T>(initialValue);
@@ -425,17 +424,17 @@ export default function Home() {
     const daySymptoms = symptoms.find(s => s.date === dateStr);
     if (daySymptoms) {
       symptomForm.reset(daySymptoms);
+      setAiSuggestion(daySymptoms.analysis || null);
     } else {
       symptomForm.reset({ mood: "neutral", cramps: 0, headaches: 0, bloating: 0, acne: 0 });
+      setAiSuggestion(null);
     }
-    setAiSuggestion(null);
   }, [selectedDay, symptoms]);
 
   async function onSymptomSubmit(values: z.infer<typeof symptomSchema>) {
     if (!selectedDay) return;
     const dateStr = format(selectedDay, 'yyyy-MM-dd');
     const otherSymptoms = symptoms.filter(s => s.date !== dateStr);
-    setSymptoms([...otherSymptoms, { date: dateStr, ...values }]);
     
     setIsAnalyzing(true);
     setAiSuggestion(null);
@@ -449,9 +448,11 @@ export default function Home() {
       };
       const result = await symptomAnalyzer(input);
       setAiSuggestion(result.suggestions);
+      setSymptoms([...otherSymptoms, { date: dateStr, ...values, analysis: result.suggestions }]);
     } catch (error) {
       console.error(error);
       toast({ variant: 'destructive', title: "AI Analysis Failed", description: "Could not get suggestions." });
+      setSymptoms([...otherSymptoms, { date: dateStr, ...values, analysis: undefined }]);
     } finally {
       setIsAnalyzing(false);
     }

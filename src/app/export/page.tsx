@@ -1,8 +1,7 @@
-
 "use client";
 
 import { useEffect, useState, useRef, useMemo } from 'react';
-import { format, startOfDay, addDays, getDaysInMonth, startOfMonth, getDay, eachMonthOfInterval, startOfYear, endOfYear, isSameMonth } from 'date-fns';
+import { format, startOfDay, addDays, getDaysInMonth, startOfMonth, getDay, eachMonthOfInterval, startOfYear, endOfYear, isSameMonth, parseISO } from 'date-fns';
 import { Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -15,6 +14,7 @@ type Symptoms = {
   headaches: number;
   bloating: number;
   acne: number;
+  analysis?: string;
 };
 
 function loadFromStorage<T>(key: string, defaultValue: T): T {
@@ -137,6 +137,43 @@ const CalendarMonth = ({ month, cycles, notes, symptoms, cycleCalcs }: {
     );
 }
 
+const SymptomLog = ({symptoms}: {symptoms: Symptoms[]}) => {
+    if (symptoms.length === 0) return null;
+    const sortedSymptoms = [...symptoms].sort((a,b) => parseISO(a.date).getTime() - parseISO(b.date).getTime());
+    const sliderLabels = ['None', 'Mild', 'Moderate', 'Severe', 'Very Severe'];
+    const moodLabels: {[key: string]: string} = {
+      'happy': 'Happy', 'neutral': 'Neutral', 'sad': 'Sad', 'anxious': 'Anxious', 'irritable': 'Irritable'
+    };
+
+    return (
+        <section className="page-break no-break">
+            <h2 className="text-2xl font-bold mb-4 text-gray-700">Symptom & Analysis Log</h2>
+            <div className="border border-gray-300 rounded-lg">
+                <div className="grid grid-cols-1 divide-y divide-gray-300">
+                    {sortedSymptoms.map(symptom => (
+                        <div key={symptom.date} className="p-4">
+                            <h3 className="font-bold text-lg mb-2">{format(parseISO(symptom.date), "MMMM d, yyyy")}</h3>
+                            <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
+                                <div><strong>Mood:</strong> {moodLabels[symptom.mood] || symptom.mood}</div>
+                                <div><strong>Cramps:</strong> {sliderLabels[symptom.cramps]}</div>
+                                <div><strong>Headaches:</strong> {sliderLabels[symptom.headaches]}</div>
+                                <div><strong>Bloating:</strong> {sliderLabels[symptom.bloating]}</div>
+                                <div><strong>Acne:</strong> {sliderLabels[symptom.acne]}</div>
+                            </div>
+                             {symptom.analysis && (
+                                <div className="mt-3 pt-3 border-t border-gray-200">
+                                    <h4 className="font-semibold text-base mb-1">AI Suggestions:</h4>
+                                    <p className="text-sm text-gray-600 italic">{symptom.analysis}</p>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    )
+}
+
 export default function ExportPage() {
   const [cycles, setCycles] = useState<Cycle[]>([]);
   const [notes, setNotes] = useState<Note[]>([]);
@@ -253,7 +290,7 @@ export default function ExportPage() {
             </div>
         </section>
 
-        <section className="page-break">
+        <section>
              <h2 className="text-2xl font-bold mb-4 text-gray-700">Calendar View</h2>
              {monthsToRender.length > 0 ? (
                 monthsToRender.map(month => (
@@ -263,6 +300,8 @@ export default function ExportPage() {
                 <p>No data available to display in calendar.</p>
              )}
         </section>
+
+        <SymptomLog symptoms={symptoms} />
         
     </div>
   );
