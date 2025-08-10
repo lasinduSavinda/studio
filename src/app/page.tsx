@@ -204,7 +204,7 @@ const OnboardingWizard = ({ onComplete }: { onComplete: (cycles: Cycle[], cycleL
                         </div>
                     </div>
                     <div className="mt-10 flex justify-center">
-                        <Button onClick={handleSubmit} size="lg" className="bg-[#f0428d] hover:bg-[#d03878] text-white">Track Now</Button>
+                        <Button onClick={handleSubmit} size="lg">Track Now</Button>
                     </div>
                 </Card>
             </main>
@@ -245,11 +245,11 @@ const TrackerView = ({
             isToday: format(new Date(), 'yyyy-MM-dd') === dateStr,
         };
 
-        if (menstruationDays.some(d => format(d, 'yyyy-MM-dd') === dateStr)) props.className = cn(props.className, 'bg-pink-500 text-white');
-        else if (predictedPeriod.some(d => format(d, 'yyyy-MM-dd') === dateStr)) props.className = cn(props.className, 'bg-pink-300 text-white');
-        else if (ovulationDays.some(d => format(d, 'yyyy-MM-dd') === dateStr)) props.className = cn(props.className, 'bg-purple-500 text-white');
-        else if (fertileDays.some(d => format(d, 'yyyy-MM-dd') === dateStr)) props.className = cn(props.className, 'bg-yellow-400 text-yellow-800');
-        else if (lutealDays.some(d => format(d, 'yyyy-MM-dd') === dateStr)) props.className = cn(props.className, 'bg-green-500 text-white');
+        if (menstruationDays.some(d => format(d, 'yyyy-MM-dd') === dateStr)) props.className = cn(props.className, 'bg-[#FF75A6] text-white');
+        else if (predictedPeriod.some(d => format(d, 'yyyy-MM-dd') === dateStr)) props.className = cn(props.className, 'bg-[#FFC0D3] text-[#FF75A6]');
+        else if (ovulationDays.some(d => format(d, 'yyyy-MM-dd') === dateStr)) props.className = cn(props.className, 'bg-[#A694FF] text-white');
+        else if (fertileDays.some(d => format(d, 'yyyy-MM-dd') === dateStr)) props.className = cn(props.className, 'bg-[#FFE699] text-[#FFA900]');
+        else if (lutealDays.some(d => format(d, 'yyyy-MM-dd') === dateStr)) props.className = cn(props.className, 'bg-[#82E0AA] text-white');
 
         if (props.isSelected) props.className = cn(props.className, 'ring-2 ring-offset-2 ring-primary');
         if (props.isToday && !props.className.includes('bg-')) props.className = cn(props.className, 'bg-gray-200');
@@ -265,12 +265,12 @@ const TrackerView = ({
         const blanks = Array.from({ length: firstDayOfMonth }, (_, i) => i);
         return (
             <div key={format(month, 'yyyy-MM')} className="flex-1">
-                <div className="flex justify-between items-center bg-pink-500 text-white p-2 rounded-t-md">
-                    <Button variant="ghost" size="icon" className="w-8 h-8 hover:bg-pink-600" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
+                <div className="flex justify-between items-center bg-primary/20 text-primary-foreground p-2 rounded-t-md">
+                    <Button variant="ghost" size="icon" className="w-8 h-8 hover:bg-primary/30" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
                         <ChevronLeft className="h-5 w-5" />
                     </Button>
                     <h3 className="font-bold">{format(month, 'MMMM yyyy')}</h3>
-                    <Button variant="ghost" size="icon" className="w-8 h-8 hover:bg-pink-600" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
+                    <Button variant="ghost" size="icon" className="w-8 h-8 hover:bg-primary/30" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
                         <ChevronRight className="h-5 w-5" />
                     </Button>
                 </div>
@@ -294,11 +294,11 @@ const TrackerView = ({
     };
 
     const legendItems = [
-      { label: "Period", color: "bg-pink-500" },
-      { label: "Predicted", color: "bg-pink-300" },
-      { label: "Fertile", color: "bg-yellow-400" },
-      { label: "Ovulation", color: "bg-purple-500" },
-      { label: "Luteal", color: "bg-green-500" },
+      { label: "Period", color: "bg-[#FF75A6]" },
+      { label: "Predicted", color: "bg-[#FFC0D3]" },
+      { label: "Fertile", color: "bg-[#FFE699]" },
+      { label: "Ovulation", color: "bg-[#A694FF]" },
+      { label: "Luteal", color: "bg-[#82E0AA]" },
     ];
 
     return (
@@ -307,10 +307,10 @@ const TrackerView = ({
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
                     <CardTitle>Your Tracker</CardTitle>
                     <div className="flex items-center gap-2 text-sm">
-                        <Button onClick={() => setCurrentMonth(subMonths(currentMonth, 3))} className="bg-[#f0428d] hover:bg-[#d03878] text-white text-xs px-2 h-8">
+                        <Button onClick={() => setCurrentMonth(subMonths(currentMonth, 3))} className="text-xs px-2 h-8">
                             <ChevronLeft className="mr-1 h-4 w-4" /> Prev 3
                         </Button>
-                        <Button onClick={() => setCurrentMonth(addMonths(currentMonth, 3))} className="bg-[#f0428d] hover:bg-[#d03878] text-white text-xs px-2 h-8">
+                        <Button onClick={() => setCurrentMonth(addMonths(currentMonth, 3))} className="text-xs px-2 h-8">
                              Next 3 <ChevronRight className="ml-1 h-4 w-4" />
                         </Button>
                     </div>
