@@ -16,7 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from "@/hooks/use-toast";
 import { symptomAnalyzer, type SymptomAnalyzerInput } from '@/ai/flows/symptom-analyzer';
-import { Bell, Droplets, FileDown, HeartPulse, Moon, Sparkles, Stethoscope, StickyNote, Trash2 } from 'lucide-react';
+import { Bell, Droplets, FileDown, HeartPulse, Moon, Sparkles, Stethoscope, StickyNote, Trash2, Minus, Plus, CalendarIcon } from 'lucide-react';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -29,6 +29,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Separator } from '@/components/ui/separator';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 
 type Cycle = { start: Date; end: Date };
 type Note = { date: string; text: string };
@@ -48,7 +49,7 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => voi
         const item = window.localStorage.getItem(key);
         if (item) {
             setStoredValue(JSON.parse(item, (k, value) => {
-                if ((k === 'start' || k === 'end') && value) return new Date(value);
+                if ((k === 'start' || k === 'end' || k === 'lastPeriodStart') && value) return new Date(value);
                 return value;
             }));
         }
@@ -94,12 +95,87 @@ const Header = () => (
   </header>
 );
 
+const OnboardingWizard = ({ onComplete }: { onComplete: (cycles: Cycle[], cycleLength: number) => void }) => {
+    
+    const [lastPeriodStart, setLastPeriodStart] = useState<Date>(startOfDay(new Date()));
+    const [periodLength, setPeriodLength] = useState(5);
+    const [cycleLength, setCycleLength] = useState(28);
+
+    const handleSubmit = () => {
+        const startDate = startOfDay(lastPeriodStart);
+        const endDate = addDays(startDate, periodLength - 1);
+        const firstCycle: Cycle = { start: startDate, end: endDate };
+        onComplete([firstCycle], cycleLength);
+    };
+
+    return (
+        <div className="flex flex-col h-screen bg-background text-foreground">
+            <Header />
+            <main className="flex-1 flex flex-col items-center justify-center p-4">
+                <Card className="w-full max-w-lg p-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                        <div className="flex flex-col items-center gap-2">
+                            <Label className="text-sm font-normal text-muted-foreground">Date of your last period?</Label>
+                             <Popover>
+                                <PopoverTrigger asChild>
+                                <Button variant="ghost" className="text-lg text-primary font-semibold">
+                                    <CalendarIcon className="mr-2 h-5 w-5" />
+                                    {format(lastPeriodStart, "MMM do")}
+                                </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0">
+                                    <Calendar
+                                        mode="single"
+                                        selected={lastPeriodStart}
+                                        onSelect={(d) => d && setLastPeriodStart(d)}
+                                        initialFocus
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+
+                         <div className="flex flex-col items-center gap-2">
+                            <Label className="text-sm font-normal text-muted-foreground">How long did it last?</Label>
+                            <div className="flex items-center gap-4">
+                                <Button variant="ghost" size="icon" onClick={() => setPeriodLength(v => Math.max(1, v - 1))}>
+                                    <Minus className="h-5 w-5"/>
+                                </Button>
+                                <span className="text-lg text-primary font-semibold">{periodLength} Days</span>
+                                <Button variant="ghost" size="icon" onClick={() => setPeriodLength(v => v + 1)}>
+                                    <Plus className="h-5 w-5"/>
+                                </Button>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col items-center gap-2">
+                            <Label className="text-sm font-normal text-muted-foreground">What's your usual cycle length?</Label>
+                             <div className="flex items-center gap-4">
+                                <Button variant="ghost" size="icon" onClick={() => setCycleLength(v => Math.max(15, v - 1))}>
+                                    <Minus className="h-5 w-5"/>
+                                </Button>
+                                <span className="text-lg text-primary font-semibold">{cycleLength} Days</span>
+                                <Button variant="ghost" size="icon" onClick={() => setCycleLength(v => Math.min(60, v + 1))}>
+                                    <Plus className="h-5 w-5"/>
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="mt-10 flex justify-center">
+                        <Button onClick={handleSubmit} size="lg" className="bg-[#f0428d] hover:bg-[#d03878] text-white">Track Now</Button>
+                    </div>
+                </Card>
+            </main>
+        </div>
+    );
+};
+
 export default function Home() {
   const [cycles, setCycles] = useLocalStorage<Cycle[]>('cycles', []);
   const [notes, setNotes] = useLocalStorage<Note[]>('notes', []);
   const [symptoms, setSymptoms] = useLocalStorage<Symptoms[]>('symptoms', []);
   const [reminders, setReminders] = useLocalStorage('reminders', { period: true, ovulation: true });
-
+  const [userCycleLength, setUserCycleLength] = useLocalStorage<number | null>('userCycleLength', null);
+  
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(startOfDay(new Date()));
   const [isClient, setIsClient] = useState(false);
   
@@ -110,15 +186,16 @@ export default function Home() {
   }, []);
 
   const cycleLength = useMemo(() => {
+    if (userCycleLength) return userCycleLength;
     if (cycles.length < 2) return 28;
     const lengths = cycles.slice(1).map((c, i) => (c.start.getTime() - cycles[i].start.getTime()) / (1000 * 3600 * 24));
     return Math.round(lengths.reduce((a, b) => a + b, 0) / lengths.length);
-  }, [cycles]);
+  }, [cycles, userCycleLength]);
 
   const { menstruationDays, fertileDays, ovulationDay, predictedPeriod } = useMemo(() => {
     const menstruationDays = cycles.flatMap(c => {
       const dates = [];
-      for (let d = startOfDay(c.start); d <= startOfDay(c.end); d = addDays(d, 1)) {
+      for (let d = startOfDay(new Date(c.start)); d <= startOfDay(new Date(c.end)); d = addDays(d, 1)) {
         dates.push(d);
       }
       return dates;
@@ -168,11 +245,9 @@ export default function Home() {
     setNotes([]);
     setSymptoms([]);
     setReminders({ period: true, ovulation: true });
+    setUserCycleLength(null);
     if (typeof window !== "undefined") {
-      window.localStorage.removeItem('cycles');
-      window.localStorage.removeItem('notes');
-      window.localStorage.removeItem('symptoms');
-      window.localStorage.removeItem('reminders');
+      window.localStorage.clear();
       window.location.reload();
     }
     toast({ title: "Data Cleared", description: "All your data has been removed." });
@@ -242,6 +317,14 @@ export default function Home() {
       </div>
     );
   }
+  
+  if (isClient && cycles.length === 0) {
+    return <OnboardingWizard onComplete={(newCycles, newCycleLength) => {
+        setCycles(newCycles);
+        setUserCycleLength(newCycleLength);
+    }} />;
+  }
+
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
