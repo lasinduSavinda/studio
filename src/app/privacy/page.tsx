@@ -28,6 +28,9 @@ const Header = () => (
             <Button variant="ghost" asChild>
                 <Link href="/contact">Contact</Link>
             </Button>
+            <Button variant="ghost" asChild>
+                <Link href="/blog">Blog</Link>
+            </Button>
         </nav>
         <div className="md:hidden">
             <Sheet>
@@ -49,6 +52,9 @@ const Header = () => (
                         </Button>
                         <Button variant="ghost" asChild>
                             <Link href="/contact">Contact</Link>
+                        </Button>
+                        <Button variant="ghost" asChild>
+                            <Link href="/blog">Blog</Link>
                         </Button>
                     </nav>
                 </SheetContent>
