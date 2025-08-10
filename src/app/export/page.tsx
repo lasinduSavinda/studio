@@ -187,7 +187,7 @@ export default function ExportPage() {
             ...cycles.flatMap(c => {
                 const dates = [];
                 for (let d = new Date(c.start); d <= new Date(c.end); d.setDate(d.getDate() + 1)) {
-                    dates.push(startOfDay(d));
+                    dates.push(startOfDay(new Date(d)));
                 }
                 return dates;
             }),
