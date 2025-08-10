@@ -15,7 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from "@/hooks/use-toast";
 import { symptomAnalyzer, type SymptomAnalyzerInput } from '@/ai/flows/symptom-analyzer';
-import { Bell, Droplets, FileDown, HeartPulse, Moon, Sparkles, Stethoscope, StickyNote, Trash2, Minus, Plus, CalendarIcon, ChevronLeft, ChevronRight, Menu } from 'lucide-react';
+import { Bell, Droplets, FileDown, HeartPulse, Lock, Moon, Sparkles, Stethoscope, StickyNote, Trash2, Minus, Plus, CalendarIcon, ChevronLeft, ChevronRight, Menu, CheckCircle } from 'lucide-react';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -158,17 +158,17 @@ const OnboardingWizard = ({ onComplete }: { onComplete: (cycles: Cycle[], cycleL
     };
 
     return (
-        <div className="flex flex-col h-screen bg-background text-foreground">
+        <div className="flex flex-col min-h-screen bg-background text-foreground">
             <Header />
             <main className="flex-1 flex flex-col items-center justify-center p-4">
                 <Card className="w-full max-w-2xl">
                     <CardHeader className="text-center p-6 md:p-8">
                         <CardTitle className="text-3xl md:text-4xl font-bold">Welcome to Your Period Tracker!</CardTitle>
                         <CardDescription className="text-base md:text-lg text-muted-foreground mt-2">
-                            To get started, please provide a little information about your last cycle. All data is stored privately on your device.
+                           This is a free and private tool to help you understand your menstrual cycle. To get started, please provide a little information about your last cycle.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="p-6 md:p-12">
+                    <CardContent className="p-6 md:p-8">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 text-center">
                             <div className="flex flex-col items-center gap-3">
                                 <Label className="text-base font-normal text-muted-foreground">Date of your last period?</Label>
@@ -220,6 +220,39 @@ const OnboardingWizard = ({ onComplete }: { onComplete: (cycles: Cycle[], cycleL
                             <Button onClick={handleSubmit} size="lg" className="text-lg px-10 py-6">Track Now</Button>
                         </div>
                     </CardContent>
+                    <CardFooter className="flex-col items-start bg-muted/50 p-6 md:p-8 rounded-b-lg">
+                        <h3 className="text-xl font-semibold mb-4 text-foreground">How It Works</h3>
+                        <div className="space-y-4 text-muted-foreground">
+                            <div className="flex items-start gap-3">
+                                <CheckCircle className="w-6 h-6 text-primary mt-1 shrink-0" />
+                                <div>
+                                    <h4 className="font-semibold text-foreground">1. Log Your Period</h4>
+                                    <p>After this initial setup, you'll see a calendar. Simply select the first day of your period on the calendar and click "Log Period Start." That's it!</p>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <CheckCircle className="w-6 h-6 text-primary mt-1 shrink-0" />
+                                <div>
+                                    <h4 className="font-semibold text-foreground">2. Track Symptoms & Notes</h4>
+                                    <p>Select any day on the calendar to log daily symptoms, moods, and private notes. Use our AI analysis to get insights into your symptom patterns.</p>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <CheckCircle className="w-6 h-6 text-primary mt-1 shrink-0" />
+                                <div>
+                                    <h4 className="font-semibold text-foreground">3. View Predictions</h4>
+                                    <p>Based on your input, the tracker will automatically predict your future periods, fertile windows, and ovulation days on the calendar.</p>
+                                </div>
+                            </div>
+                             <div className="flex items-start gap-3">
+                                <Lock className="w-5 h-5 text-primary mt-1 shrink-0" />
+                                <div>
+                                    <h4 className="font-semibold text-foreground">Your Privacy is Guaranteed</h4>
+                                    <p>All data you enter is stored exclusively in your browser. It never leaves your device, and we have no access to it. You are in complete control.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </CardFooter>
                 </Card>
             </main>
         </div>
