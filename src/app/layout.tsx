@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
-  title: 'LunaCycle - Free Period Tracker Online',
+  title: 'Free Period Tracker Online',
   description: 'Track your menstrual cycle, predict your period, ovulation and fertile window with our free online period tracker. Log symptoms and get insights.',
   keywords: 'period tracker, cycle tracking, ovulation calendar, fertility tracker, menstrual cycle, period calculator, free period tracker',
 };
