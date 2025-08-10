@@ -254,4 +254,208 @@ export const blogPosts: BlogPost[] = [
         </div>
     ),
   },
+  {
+    slug: 'period-and-mental-health',
+    title: 'Your Period and Mental Health: What\'s the Connection?',
+    publishDate: 'August 22, 2024',
+    summary: (
+      <p>
+        The hormonal shifts of the menstrual cycle don't just affect the body; they can have a profound impact on mental and emotional well-being. Understanding this connection is the first step toward managing it.
+      </p>
+    ),
+    content: (
+        <div className="space-y-4 text-base md:text-lg text-muted-foreground">
+            <p>
+                The link between hormonal fluctuations and mental health is powerful. For many people, the menstrual cycle brings not just physical symptoms, but also significant emotional shifts. If you've ever felt more anxious, irritable, or down in the days leading up to your period, you're not alone.
+            </p>
+
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">The Hormonal Rollercoaster</h3>
+            <p>
+                The key players are estrogen and progesterone. These hormones don't just regulate your cycle; they also influence neurotransmitters in your brain, like serotonin (the "feel-good" chemical) and dopamine.
+            </p>
+            <ul className="list-disc list-inside space-y-2 pl-4">
+                <li><strong>Mid-Cycle High:</strong> Around ovulation, high estrogen levels can boost your mood and energy.</li>
+                <li><strong>Pre-Period Low (Luteal Phase):</strong> In the week or two before your period, estrogen and progesterone levels plummet. This drop can lead to a decrease in serotonin, contributing to the classic PMS symptoms of sadness, irritability, and anxiety.</li>
+            </ul>
+
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">PMS vs. PMDD</h3>
+            <p>
+                While many experience mild to moderate PMS, some face a more severe condition called Premenstrual Dysphoric Disorder (PMDD). PMDD is a serious health condition that can cause extreme mood shifts, depression, and anger that interfere with daily life. It's more than just "bad PMS" and often requires treatment from a healthcare provider.
+            </p>
+            
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">Strategies for Emotional Wellness</h3>
+             <ul className="list-disc list-inside space-y-2 pl-4">
+                <li><strong>Track Your Mood:</strong> Use your period tracker to log how you're feeling each day. Identifying a pattern can be validating and help you prepare for challenging days.</li>
+                <li><strong>Prioritize Self-Care:</strong> During the luteal phase, be extra kind to yourself. This could mean gentle exercise, meditation, spending time in nature, or setting aside time for hobbies you enjoy.</li>
+                <li><strong>Talk About It:</strong> Share how you're feeling with a trusted friend, partner, or therapist. Feeling understood can make a huge difference.</li>
+                <li><strong>Seek Professional Help:</strong> If your mood symptoms are severe or disruptive, don't hesitate to speak with a doctor or mental health professional. There are many effective treatments available.</li>
+            </ul>
+        </div>
+    ),
+  },
+   {
+    slug: 'decoding-period-blood-color',
+    title: 'Decoding Your Period Blood Color: What It Means',
+    publishDate: 'August 29, 2024',
+    summary: (
+      <p>
+        The color and consistency of your menstrual blood can change throughout your period and from cycle to cycle. While usually not a cause for alarm, it can offer clues about your hormonal health.
+      </p>
+    ),
+    content: (
+        <div className="space-y-4 text-base md:text-lg text-muted-foreground">
+            <p>
+               Paying attention to the color of your period blood might not be your favorite activity, but it can provide useful insights into your health. The color is primarily influenced by how long the blood has been in the uterus and exposed to oxygen.
+            </p>
+
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">Bright Red</h3>
+            <p>
+               This is typically a sign of fresh, steady flow. It's common to see bright red blood at the beginning and middle of your period when bleeding is heaviest. It means blood is flowing quickly from the uterus and doesn't have time to oxidize and darken.
+            </p>
+
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">Dark Red or Brown</h3>
+            <p>
+                Dark red, brown, or even black blood is usually just older blood. It's had more time to oxidize, which is what makes it change color. You'll often see this at the very beginning or end of your period when the flow is lighter and slower. It can also be from leftover blood from your previous cycle.
+            </p>
+
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">Pink</h3>
+            <p>
+                Pinkish blood often occurs when period blood mixes with cervical fluid. It's common at the beginning or end of your period. It can also be a sign of low estrogen levels. Sometimes, people experience light pink spotting mid-cycle during ovulation.
+            </p>
+
+             <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">Orange</h3>
+            <p>
+                Similar to pink blood, orange discharge can also happen when blood mixes with cervical fluid. However, if it's accompanied by a bad odor or itching, it could be a sign of an infection, like bacterial vaginosis or trichomoniasis, and it's a good idea to see a doctor.
+            </p>
+            
+             <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">Gray</h3>
+            <p>
+                Gray discharge is a reason to call your doctor. It's often a symptom of bacterial vaginosis (BV), an infection caused by an imbalance in the natural bacteria of the vagina. Other signs of BV include itching, a foul or fishy odor, and irritation.
+            </p>
+            <p>
+                Remember, your period can vary. But if you notice a major, persistent change in color, flow, or experience symptoms like a foul odor or severe pain, it's always best to check in with a healthcare provider.
+            </p>
+        </div>
+    ),
+  },
+  {
+    slug: 'how-hormones-affect-skin',
+    title: 'How Hormones Affect Your Skin Throughout Your Cycle',
+    publishDate: 'September 5, 2024',
+    summary: (
+      <p>
+        Ever wonder why you get breakouts right before your period or why your skin glows mid-cycle? It's all connected to the hormonal fluctuations of your menstrual cycle. Here's a look at what's happening.
+      </p>
+    ),
+    content: (
+        <div className="space-y-4 text-base md:text-lg text-muted-foreground">
+            <p>
+                Your skin is one of the most visible indicators of what's happening inside your body, and your menstrual cycle plays a huge role. The rise and fall of hormones like estrogen, progesterone, and testosterone can directly impact your skin's oil production, hydration, and overall appearance.
+            </p>
+
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">During Your Period (Menstrual Phase)</h3>
+            <p>
+                At the start of your cycle, both estrogen and progesterone are low. This can cause your skin to feel dry, dull, and more sensitive. Your body also produces more prostaglandins, which can increase inflammation and make your skin feel more reactive.
+            </p>
+            <p><strong>Skincare Tip:</strong> Focus on hydration and gentle, soothing ingredients. Use a rich moisturizer and avoid harsh exfoliants or new products that could cause irritation.</p>
+            
+
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">Leading Up to Ovulation (Follicular Phase)</h3>
+            <p>
+                As your period ends, estrogen starts to rise. Estrogen promotes collagen production, improves skin thickness, and helps your skin retain moisture. This is when your skin is often at its best—plump, hydrated, and clear. You might notice that "ovulation glow."
+            </p>
+            <p><strong>Skincare Tip:</strong> This is a great time for exfoliation to maintain that glow. Your skin is more resilient, so you can incorporate active ingredients like retinoids or vitamin C.</p>
+            
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">After Ovulation (Luteal Phase)</h3>
+            <p>
+                This is where things can get tricky. After ovulation, progesterone levels rise. Progesterone can cause the skin to swell and compress pores. At the same time, this hormone increases sebum (oil) production. This combination of tight pores and excess oil creates the perfect environment for bacteria to get trapped, leading to those classic premenstrual breakouts, especially around the chin and jawline.
+            </p>
+            <p><strong>Skincare Tip:</strong> Focus on keeping pores clear. Use a gentle cleanser and consider incorporating products with salicylic acid (a BHA) to exfoliate inside the pores and reduce oiliness. Clay masks can also be helpful for absorbing excess sebum.</p>
+        </div>
+    ),
+  },
+   {
+    slug: 'debunking-common-period-myths',
+    title: 'Debunking Common Period Myths',
+    publishDate: 'September 12, 2024',
+    summary: (
+      <p>
+        From swimming on your period to syncing cycles with your friends, there's a lot of misinformation out there. Let's separate fact from fiction and debunk some of the most common period myths.
+      </p>
+    ),
+    content: (
+        <div className="space-y-4 text-base md:text-lg text-muted-foreground">
+            <p>
+                For something that about half the world's population experiences, periods are still surrounded by a surprising amount of mystery and misinformation. Let's clear up some of the most common myths.
+            </p>
+
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">Myth 1: You Can't Get Pregnant on Your Period</h3>
+            <p>
+                <strong>Fact:</strong> While it's less likely, it is absolutely possible to get pregnant while you're on your period. Sperm can live inside the female reproductive tract for up to five days. If you have a shorter cycle and have sex near the end of your period, the sperm could still be present when you ovulate shortly after.
+            </p>
+
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">Myth 2: You Shouldn't Swim or Take a Bath on Your Period</h3>
+            <p>
+                <strong>Fact:</strong> This is an old myth with no scientific basis. It is perfectly hygienic and safe to swim or bathe during your period. Water pressure can temporarily lighten or stop your flow anyway. If you're concerned, you can use a tampon or menstrual cup. In fact, a warm bath can be great for soothing cramps.
+            </p>
+            
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">Myth 3: Periods Should Last Exactly 7 Days and Come Every 28 Days</h3>
+             <p>
+                <strong>Fact:</strong> The "28-day cycle" is just an average. A normal, healthy cycle can range from 21 to 35 days, and a period can last anywhere from 3 to 7 days. What's most important is that your cycle is consistent and regular *for you*.
+            </p>
+
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">Myth 4: Your Cycle Syncs Up with People You Spend a Lot of Time With</h3>
+            <p>
+                <strong>Fact:</strong> This is a widely believed phenomenon, but scientific studies have found no evidence to support it. While it might seem like your cycle aligns with a friend, roommate, or family member, it's more likely due to mathematical coincidence and chance. Over time, cycles of different lengths are bound to overlap occasionally.
+            </p>
+
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">Myth 5: PMS is "All in Your Head"</h3>
+            <p>
+                <strong>Fact:</strong> Premenstrual Syndrome is a very real condition with documented physical and emotional symptoms caused by hormonal fluctuations. The drop in estrogen and progesterone before your period can affect neurotransmitters in your brain, leading to real changes in mood and physical discomfort.
+            </p>
+        </div>
+    ),
+  },
+  {
+    slug: 'navigating-perimenopause',
+    title: 'Navigating Perimenopause: Signs and Symptom Management',
+    publishDate: 'September 19, 2024',
+    summary: (
+      <p>
+        Perimenopause is the transitional stage before menopause, and it can bring a host of changes to your cycle and body. Knowing the signs can help you navigate this new phase with confidence.
+      </p>
+    ),
+    content: (
+        <div className="space-y-4 text-base md:text-lg text-muted-foreground">
+            <p>
+                Perimenopause, which means "around menopause," is the transitional period before a person's periods stop for good. It can start in your 40s, but for some, it begins in their 30s. During this time, the ovaries begin to produce less estrogen, leading to a variety of changes. It's a natural life stage, but it can be confusing. Here's what to look for.
+            </p>
+
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">Common Signs of Perimenopause</h3>
+            <p>
+                Because of the fluctuating hormone levels, you may start to experience a new set of symptoms.
+            </p>
+            <ul className="list-disc list-inside space-y-2 pl-4">
+                <li><strong>Irregular Periods:</strong> This is often the first sign. Your cycle length may become longer or shorter. You might have heavier or lighter flows, or you might skip some periods altogether. Tracking your cycle becomes incredibly helpful here to notice these changes.</li>
+                <li><strong>Hot Flashes and Night Sweats:</strong> The classic menopause symptom. A hot flash is a sudden feeling of warmth that spreads through the body, often causing flushing and sweating.</li>
+                <li><strong>Sleep Problems:</strong> Trouble sleeping can be caused by night sweats, but it can also be a symptom on its own.</li>
+                <li><strong>Mood Changes:</strong> Increased irritability, anxiety, or feelings of depression are common, much like a more intense version of PMS.</li>
+                 <li><strong>Vaginal Dryness:</strong> Lower estrogen can lead to tissues becoming thinner and less lubricated, which can make intercourse uncomfortable.</li>
+            </ul>
+
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">Managing Symptoms</h3>
+            <p>
+                While you can't stop perimenopause, you can manage the symptoms through lifestyle adjustments and medical support.
+            </p>
+            <ul className="list-disc list-inside space-y-2 pl-4">
+                <li><strong>Lifestyle First:</strong> A balanced diet, regular exercise (especially weight-bearing exercise for bone health), and stress management techniques like meditation are your first line of defense.</li>
+                <li><strong>Dress in Layers:</strong> This can help you manage hot flashes by easily removing clothing when you feel one coming on.</li>
+                <li><strong>Talk to Your Doctor:</strong> Don't hesitate to seek medical advice. Your doctor can discuss options ranging from low-dose birth control pills to regulate cycles, to hormone replacement therapy (HRT) if symptoms are severe.</li>
+            </ul>
+             <p>
+                You officially reach menopause when you've gone 12 consecutive months without a period. Perimenopause is the journey to that destination, and while it has its challenges, understanding what's happening can empower you to take control of your health.
+            </p>
+        </div>
+    ),
+  },
 ];
