@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
@@ -35,50 +35,40 @@ type Note = { date: string; text: string };
 type Symptoms = z.infer<typeof symptomSchema> & { date: string };
 
 function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    if (typeof window === "undefined") {
-      return initialValue;
+  const [storedValue, setStoredValue] = useState<T>(initialValue);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      try {
+        const item = window.localStorage.getItem(key);
+        if (item) {
+            setStoredValue(JSON.parse(item, (k, value) => {
+                if ((k === 'start' || k === 'end') && value) return new Date(value);
+                return value;
+            }));
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
-    try {
-      const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item, (k, value) => {
-        if ((k === 'start' || k === 'end') && value) return new Date(value);
-        return value;
-      }) : initialValue;
-    } catch (error) {
-      console.error(error);
-      return initialValue;
-    }
-  });
+  }, [key, isMounted]);
 
   const setValue = (value: T) => {
     try {
       const valueToStore = value instanceof Function ? value(storedValue) : value;
       setStoredValue(valueToStore);
-      if (typeof window !== "undefined") {
+       if (isMounted) {
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
       }
     } catch (error) {
       console.error(error);
     }
   };
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-        try {
-            const item = window.localStorage.getItem(key);
-            if (item) {
-                setStoredValue(JSON.parse(item, (k, value) => {
-                    if ((k === 'start' || k === 'end') && value) return new Date(value);
-                    return value;
-                }));
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    }
-  }, [key]);
-
 
   return [storedValue, setValue];
 }
@@ -207,7 +197,7 @@ export default function Home() {
       symptomForm.reset({ mood: "neutral", cramps: 0, headaches: 0, bloating: 0, acne: 0 });
     }
     setAiSuggestion(null);
-  }, [selectedDay, symptoms, symptomForm]);
+  }, [selectedDay, symptoms]);
 
   async function onSymptomSubmit(values: z.infer<typeof symptomSchema>) {
     if (!selectedDay) return;
@@ -382,5 +372,7 @@ export default function Home() {
     </div>
   );
 }
+
+    
 
     
