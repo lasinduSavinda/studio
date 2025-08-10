@@ -127,7 +127,7 @@ const CalendarMonth = ({ month, cycles, notes, symptoms, cycleCalcs }: {
                                         {symptomLabels[symptom.mood] || symptom.mood}
                                     </div>
                                 )}
-                                {note && <p className="line-clamp-3" title={note.text}>📝 Note</p>}
+                                {note && <p className="line-clamp-3" title={note.text}>📝</p>}
                             </div>
                         </div>
                     )
@@ -138,8 +138,9 @@ const CalendarMonth = ({ month, cycles, notes, symptoms, cycleCalcs }: {
 }
 
 const SymptomLog = ({symptoms}: {symptoms: Symptoms[]}) => {
-    if (symptoms.length === 0) return null;
     const sortedSymptoms = [...symptoms].sort((a,b) => parseISO(a.date).getTime() - parseISO(b.date).getTime());
+    if (sortedSymptoms.length === 0) return null;
+
     const sliderLabels = ['None', 'Mild', 'Moderate', 'Severe', 'Very Severe'];
     const moodLabels: {[key: string]: string} = {
       'happy': 'Happy', 'neutral': 'Neutral', 'sad': 'Sad', 'anxious': 'Anxious', 'irritable': 'Irritable'
@@ -166,6 +167,27 @@ const SymptomLog = ({symptoms}: {symptoms: Symptoms[]}) => {
                                     <p className="text-sm text-gray-600 italic">{symptom.analysis}</p>
                                 </div>
                             )}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    )
+}
+
+const NotesLog = ({notes}: {notes: Note[]}) => {
+    const sortedNotes = [...notes].sort((a,b) => parseISO(a.date).getTime() - parseISO(b.date).getTime());
+    if (sortedNotes.length === 0) return null;
+    
+    return (
+        <section className="page-break no-break">
+            <h2 className="text-2xl font-bold mb-4 text-gray-700">Daily Notes</h2>
+            <div className="border border-gray-300 rounded-lg">
+                <div className="grid grid-cols-1 divide-y divide-gray-300">
+                    {sortedNotes.map(note => (
+                        <div key={note.date} className="p-4">
+                            <h3 className="font-bold text-lg mb-2">{format(parseISO(note.date), "MMMM d, yyyy")}</h3>
+                            <p className="text-sm text-gray-700 whitespace-pre-wrap">{note.text}</p>
                         </div>
                     ))}
                 </div>
@@ -303,6 +325,7 @@ export default function ExportPage() {
 
         <SymptomLog symptoms={symptoms} />
         
+        <NotesLog notes={notes} />
     </div>
   );
 }
