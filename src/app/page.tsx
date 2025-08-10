@@ -100,15 +100,13 @@ export default function Home() {
   const [symptoms, setSymptoms] = useLocalStorage<Symptoms[]>('symptoms', []);
   const [reminders, setReminders] = useLocalStorage('reminders', { period: true, ovulation: true });
 
-  const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined);
-  const [periodRange, setPeriodRange] = useState<DateRange | undefined>(undefined);
+  const [selectedDay, setSelectedDay] = useState<Date | undefined>(startOfDay(new Date()));
   const [isClient, setIsClient] = useState(false);
   
   const { toast } = useToast();
 
   useEffect(() => {
     setIsClient(true);
-    setSelectedDay(startOfDay(new Date()));
   }, []);
 
   const cycleLength = useMemo(() => {
@@ -142,11 +140,13 @@ export default function Home() {
   }, [cycles, cycleLength]);
 
   const handleAddPeriod = () => {
-    if (periodRange?.from && periodRange?.to) {
-      const newCycles = [...cycles, { start: periodRange.from, end: periodRange.to }];
+    if (selectedDay) {
+      const startDate = startOfDay(selectedDay);
+      // Assume a 5-day period for simplicity
+      const endDate = addDays(startDate, 4);
+      const newCycles = [...cycles, { start: startDate, end: endDate }];
       newCycles.sort((a, b) => a.start.getTime() - b.start.getTime());
       setCycles(newCycles);
-      setPeriodRange(undefined);
       toast({ title: "Success", description: "Period dates saved." });
     }
   };
@@ -232,7 +232,7 @@ export default function Home() {
   ];
   const sliderLabels = ['None', 'Mild', 'Moderate', 'Severe', 'Very Severe'];
 
-  if (!isClient || !selectedDay) {
+  if (!isClient) {
     return (
       <div className="flex flex-col h-screen bg-background text-foreground">
         <Header />
@@ -252,17 +252,15 @@ export default function Home() {
             <Card className="shadow-lg overflow-hidden">
               <CardContent className="p-1 md:p-2 flex flex-col lg:flex-row gap-4">
                 <Calendar
-                  mode="range"
-                  selected={periodRange}
-                  onSelect={setPeriodRange}
-                  onDayClick={(day) => setSelectedDay(startOfDay(day))}
+                  mode="single"
+                  selected={selectedDay}
+                  onSelect={setSelectedDay}
                   defaultMonth={selectedDay}
                   modifiers={{
                     menstruation: menstruationDays,
                     fertile: fertileDays,
                     ovulation: ovulationDay ? [ovulationDay] : [],
                     predicted: predictedPeriod,
-                    selected: selectedDay,
                   }}
                   modifiersClassNames={{
                     menstruation: 'bg-accent/80 text-accent-foreground',
@@ -275,9 +273,9 @@ export default function Home() {
                 />
                 <div className="flex flex-col gap-4 p-4 border-t lg:border-t-0 lg:border-l w-full lg:w-64 flex-shrink-0">
                     <h3 className="font-bold font-headline">Add Period</h3>
-                    <p className="text-sm text-muted-foreground">Select a start and end date on the calendar.</p>
+                    <p className="text-sm text-muted-foreground">Select a start date on the calendar.</p>
                     <div className="flex flex-col gap-2">
-                      <Button onClick={handleAddPeriod} disabled={!periodRange?.from || !periodRange?.to}>Save Period</Button>
+                      <Button onClick={handleAddPeriod} disabled={!selectedDay}>Log Period Start</Button>
                       <div className="flex gap-2">
                         <Button variant="outline" onClick={() => window.open('/export', '_blank')} className="flex-1">
                             <FileDown className="h-4 w-4 mr-2" />
@@ -321,7 +319,7 @@ export default function Home() {
             <Card className="shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2"><Stethoscope className="w-6 h-6 text-primary"/>Symptom Tracker</CardTitle>
-                <CardDescription>For {format(selectedDay, 'MMMM d, yyyy')}</CardDescription>
+                <CardDescription>For {selectedDay ? format(selectedDay, 'MMMM d, yyyy') : 'today'}</CardDescription>
               </CardHeader>
               <CardContent>
                 <Form {...symptomForm}>
@@ -360,7 +358,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            <Card className="shadow-lg"><CardHeader><CardTitle className="flex items-center gap-2"><StickyNote className="w-6 h-6 text-primary"/>Daily Note</CardTitle><CardDescription>For {format(selectedDay, 'MMMM d, yyyy')}</CardDescription></CardHeader><CardContent><Textarea placeholder="How are you feeling today?" value={selectedNote} onChange={(e) => handleNoteChange(e.target.value)} className="min-h-[100px]"/></CardContent></Card>
+            <Card className="shadow-lg"><CardHeader><CardTitle className="flex items-center gap-2"><StickyNote className="w-6 h-6 text-primary"/>Daily Note</CardTitle><CardDescription>For {selectedDay ? format(selectedDay, 'MMMM d, yyyy') : 'today'}</CardDescription></CardHeader><CardContent><Textarea placeholder="How are you feeling today?" value={selectedNote} onChange={(e) => handleNoteChange(e.target.value)} className="min-h-[100px]"/></CardContent></Card>
             
             <Card className="shadow-lg"><CardHeader><CardTitle className="flex items-center gap-2"><Bell className="w-6 h-6 text-primary"/>Reminders</CardTitle><CardDescription>Get notified about your cycle.</CardDescription></CardHeader><CardContent className="space-y-4">
                 <div className="flex items-center justify-between"><Label htmlFor="period-reminder" className="flex items-center gap-2"><Droplets className="w-4 h-4"/> Period Start</Label><Switch id="period-reminder" checked={reminders.period} onCheckedChange={(c) => setReminders({...reminders, period: c})} /></div>
@@ -372,7 +370,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
-
-    
