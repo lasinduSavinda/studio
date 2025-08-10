@@ -67,8 +67,8 @@ const Header = () => (
 );
 
 export default function BlogPostPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
-  const post = blogPosts.find(p => p.slug === slug);
+  const resolvedParams = React.use(Promise.resolve(params));
+  const post = blogPosts.find(p => p.slug === resolvedParams.slug);
 
   if (!post) {
     notFound();
