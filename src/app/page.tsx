@@ -155,14 +155,14 @@ const OnboardingWizard = ({ onComplete }: { onComplete: (cycles: Cycle[], cycleL
         <div className="flex flex-col h-screen bg-background text-foreground">
             <Header />
             <main className="flex-1 flex flex-col items-center justify-center p-4">
-                <Card className="w-full max-w-lg p-4 md:p-8">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                        <div className="flex flex-col items-center gap-2">
-                            <Label className="text-sm font-normal text-muted-foreground">Date of your last period?</Label>
+                <Card className="w-full max-w-2xl p-6 md:p-12">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+                        <div className="flex flex-col items-center gap-3">
+                            <Label className="text-base font-normal text-muted-foreground">Date of your last period?</Label>
                              <Popover>
                                 <PopoverTrigger asChild>
-                                <Button variant="ghost" className="text-lg text-primary font-semibold">
-                                    <CalendarIcon className="mr-2 h-5 w-5" />
+                                <Button variant="ghost" className="text-2xl text-primary font-semibold">
+                                    <CalendarIcon className="mr-2 h-6 w-6" />
                                     {format(lastPeriodStart, "MMM do")}
                                 </Button>
                                 </PopoverTrigger>
@@ -177,34 +177,34 @@ const OnboardingWizard = ({ onComplete }: { onComplete: (cycles: Cycle[], cycleL
                             </Popover>
                         </div>
 
-                         <div className="flex flex-col items-center gap-2">
-                            <Label className="text-sm font-normal text-muted-foreground">How long did it last?</Label>
+                         <div className="flex flex-col items-center gap-3">
+                            <Label className="text-base font-normal text-muted-foreground">How long did it last?</Label>
                             <div className="flex items-center gap-4">
                                 <Button variant="ghost" size="icon" onClick={() => setPeriodLength(v => Math.max(1, v - 1))}>
-                                    <Minus className="h-5 w-5"/>
+                                    <Minus className="h-6 w-6"/>
                                 </Button>
-                                <span className="text-lg text-primary font-semibold">{periodLength} Days</span>
+                                <span className="text-2xl text-primary font-semibold">{periodLength} Days</span>
                                 <Button variant="ghost" size="icon" onClick={() => setPeriodLength(v => v + 1)}>
-                                    <Plus className="h-5 w-5"/>
+                                    <Plus className="h-6 w-6"/>
                                 </Button>
                             </div>
                         </div>
 
-                        <div className="flex flex-col items-center gap-2">
-                            <Label className="text-sm font-normal text-muted-foreground">What's your usual cycle length?</Label>
+                        <div className="flex flex-col items-center gap-3">
+                            <Label className="text-base font-normal text-muted-foreground">What's your usual cycle length?</Label>
                              <div className="flex items-center gap-4">
                                 <Button variant="ghost" size="icon" onClick={() => setCycleLength(v => Math.max(15, v - 1))}>
-                                    <Minus className="h-5 w-5"/>
+                                    <Minus className="h-6 w-6"/>
                                 </Button>
-                                <span className="text-lg text-primary font-semibold">{cycleLength} Days</span>
+                                <span className="text-2xl text-primary font-semibold">{cycleLength} Days</span>
                                 <Button variant="ghost" size="icon" onClick={() => setCycleLength(v => Math.min(60, v + 1))}>
-                                    <Plus className="h-5 w-5"/>
+                                    <Plus className="h-6 w-6"/>
                                 </Button>
                             </div>
                         </div>
                     </div>
-                    <div className="mt-10 flex justify-center">
-                        <Button onClick={handleSubmit} size="lg">Track Now</Button>
+                    <div className="mt-12 flex justify-center">
+                        <Button onClick={handleSubmit} size="lg" className="text-lg px-10 py-6">Track Now</Button>
                     </div>
                 </Card>
             </main>
