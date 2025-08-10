@@ -223,7 +223,7 @@ export default function ExportPage() {
         const allDatesInMonth = [
             ...cycles.flatMap(c => {
                 const dates = [];
-                for (let d = new Date(c.start); d <= new Date(c.end); d.setDate(d.getDate() + 1)) {
+                for (let d = new Date(c.start); d <= new Date(c.end); d = new Date(d.setDate(d.getDate() + 1))) {
                     dates.push(startOfDay(new Date(d)));
                 }
                 return dates;
@@ -273,7 +273,7 @@ export default function ExportPage() {
         <header className="flex items-center justify-between mb-8 pb-4 border-b border-gray-300 no-break">
             <div className="flex items-center gap-3">
             <Moon className="w-10 h-10 text-purple-600" />
-            <h1 className="text-4xl font-bold text-gray-800">LunaCycle Report</h1>
+            <h1 className="text-4xl font-bold text-gray-800">Free Period Tracker Online Report</h1>
             </div>
             <p className="text-gray-600">Generated on: {format(new Date(), 'MMMM d, yyyy')}</p>
         </header>

@@ -89,7 +89,7 @@ const Header = () => (
       <div className="p-2 rounded-full bg-primary/20">
         <Moon className="w-6 h-6 text-primary" />
       </div>
-      <h1 className="text-2xl font-bold font-headline text-foreground">LunaCycle</h1>
+      <h1 className="text-2xl font-bold font-headline text-foreground">Free Period Tracker Online</h1>
     </div>
     <div className="flex items-center gap-2">
     </div>

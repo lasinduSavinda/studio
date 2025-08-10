@@ -3,7 +3,7 @@ import '../globals.css';
 import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
-  title: 'LunaCycle - Export',
+  title: 'Free Period Tracker Online - Export',
   description: 'Your cycle history report.',
 };
 
