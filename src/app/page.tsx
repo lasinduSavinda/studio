@@ -35,25 +35,23 @@ type Note = { date: string; text: string };
 type Symptoms = z.infer<typeof symptomSchema> & { date: string };
 
 function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
-  const [storedValue, setStoredValue] = useState<T>(initialValue);
-
-  useEffect(() => {
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    // We can't access window on the server, so we return the initial value.
     if (typeof window === "undefined") {
-      return;
+      return initialValue;
     }
     try {
       const item = window.localStorage.getItem(key);
-      const value = item ? JSON.parse(item, (k, value) => {
+      // Parse stored json or if none return initialValue
+      return item ? JSON.parse(item, (k, value) => {
         if ((k === 'start' || k === 'end') && value) return new Date(value);
         return value;
       }) : initialValue;
-      setStoredValue(value);
     } catch (error) {
       console.error(error);
-      setStoredValue(initialValue);
+      return initialValue;
     }
-  }, [key]);
-
+  });
 
   const setValue = (value: T) => {
     try {
@@ -66,6 +64,21 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => voi
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      if (item) {
+        setStoredValue(JSON.parse(item, (k, value) => {
+          if ((k === 'start' || k === 'end') && value) return new Date(value);
+          return value;
+        }));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }, [key]);
+
 
   return [storedValue, setValue];
 }
@@ -87,9 +100,6 @@ const Header = () => (
       <h1 className="text-2xl font-bold font-headline text-foreground">LunaCycle</h1>
     </div>
     <div className="flex items-center gap-2">
-      <Button variant="outline" onClick={() => window.open('/export', '_blank')}>
-        <FileDown className="mr-2 h-4 w-4" /> Download PDF
-      </Button>
     </div>
   </header>
 );
@@ -102,10 +112,12 @@ export default function Home() {
 
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined);
   const [periodRange, setPeriodRange] = useState<DateRange | undefined>(undefined);
+  const [isClient, setIsClient] = useState(false);
   
   const { toast } = useToast();
 
   useEffect(() => {
+    setIsClient(true);
     setSelectedDay(startOfDay(new Date()));
   }, []);
 
@@ -191,7 +203,11 @@ export default function Home() {
     if (!selectedDay) return;
     const dateStr = format(selectedDay, 'yyyy-MM-dd');
     const daySymptoms = symptoms.find(s => s.date === dateStr);
-    symptomForm.reset(daySymptoms || { mood: "neutral", cramps: 0, headaches: 0, bloating: 0, acne: 0 });
+    if (daySymptoms) {
+      symptomForm.reset(daySymptoms);
+    } else {
+      symptomForm.reset({ mood: "neutral", cramps: 0, headaches: 0, bloating: 0, acne: 0 });
+    }
     setAiSuggestion(null);
   }, [selectedDay, symptoms]);
 
@@ -228,7 +244,7 @@ export default function Home() {
   ];
   const sliderLabels = ['None', 'Mild', 'Moderate', 'Severe', 'Very Severe'];
 
-  if (!selectedDay) {
+  if (!isClient || !selectedDay) {
     return (
       <div className="flex flex-col h-screen bg-background text-foreground">
         <Header />
@@ -274,6 +290,9 @@ export default function Home() {
                     <p className="text-sm text-muted-foreground">Select a start and end date on the calendar.</p>
                     <div className="flex gap-2">
                       <Button onClick={handleAddPeriod} disabled={!periodRange?.from || !periodRange?.to} className="flex-1">Save Period</Button>
+                      <Button variant="outline" size="icon" onClick={() => window.open('/export', '_blank')}>
+                          <FileDown className="h-4 w-4" />
+                      </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button variant="destructive" size="icon">
