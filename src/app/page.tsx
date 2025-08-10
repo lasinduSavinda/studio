@@ -601,8 +601,9 @@ export default function Home() {
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="destructive" size="icon">
-                          <Trash2 className="h-4 w-4" />
+                        <Button variant="destructive" className="flex-1">
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Clear All Data
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
