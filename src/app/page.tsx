@@ -234,7 +234,7 @@ const TrackerView = ({
                     </Button>
                 </div>
                 <div className="grid grid-cols-7 gap-y-1 p-2 bg-gray-100 text-center text-sm">
-                    {weekDays.map(day => <div key={day} className="font-medium text-gray-600">{day}</div>)}
+                    {weekDays.map((day, i) => <div key={`${day}-${i}`} className="font-medium text-gray-600">{day}</div>)}
                 </div>
                 <div className="grid grid-cols-7 gap-y-2 p-2 bg-white rounded-b-md shadow">
                     {blanks.map(i => <div key={`blank-${i}`}></div>)}
