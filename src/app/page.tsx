@@ -30,6 +30,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 
 type Cycle = { start: Date; end: Date };
@@ -85,14 +86,28 @@ const symptomSchema = z.object({
 
 const Header = () => (
   <header className="flex items-center justify-between p-4 border-b bg-card">
-    <div className="flex items-center gap-3">
-      <div className="p-2 rounded-full bg-primary/20">
-        <Moon className="w-6 h-6 text-primary" />
-      </div>
-      <h1 className="text-2xl font-bold font-headline text-foreground">Free Period Tracker Online</h1>
-    </div>
-    <div className="flex items-center gap-2">
-    </div>
+    <Link href="/">
+        <div className="flex items-center gap-3 cursor-pointer">
+        <div className="p-2 rounded-full bg-primary/20">
+            <Moon className="w-6 h-6 text-primary" />
+        </div>
+        <h1 className="text-2xl font-bold font-headline text-foreground">Free Period Tracker Online</h1>
+        </div>
+    </Link>
+    <nav className="flex items-center gap-4">
+        <Button variant="ghost" asChild>
+            <Link href="/">Home</Link>
+        </Button>
+        <Button variant="ghost" asChild>
+            <Link href="/about">About</Link>
+        </Button>
+        <Button variant="ghost" asChild>
+            <Link href="/privacy">Privacy</Link>
+        </Button>
+        <Button variant="ghost" asChild>
+            <Link href="/contact">Contact</Link>
+        </Button>
+    </nav>
   </header>
 );
 

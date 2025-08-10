@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Moon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Header = () => (
   <header className="flex items-center justify-between p-4 border-b bg-card">
@@ -13,6 +14,20 @@ const Header = () => (
         <h1 className="text-2xl font-bold font-headline text-foreground">Free Period Tracker Online</h1>
       </div>
     </Link>
+    <nav className="flex items-center gap-4">
+      <Button variant="ghost" asChild>
+        <Link href="/">Home</Link>
+      </Button>
+      <Button variant="ghost" asChild>
+        <Link href="/about">About</Link>
+      </Button>
+      <Button variant="ghost" asChild>
+        <Link href="/privacy">Privacy</Link>
+      </Button>
+      <Button variant="ghost" asChild>
+        <Link href="/contact">Contact</Link>
+      </Button>
+    </nav>
   </header>
 );
 
