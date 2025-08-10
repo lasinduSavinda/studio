@@ -6,6 +6,7 @@ import { Menu, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
 import { blogPosts, BlogPost } from '@/lib/blog-data';
+import React from 'react';
 
 const Header = () => (
     <header className="flex items-center justify-between p-4 border-b bg-card">
@@ -66,7 +67,8 @@ const Header = () => (
 );
 
 export default function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = blogPosts.find(p => p.slug === params.slug);
+  const { slug } = params;
+  const post = blogPosts.find(p => p.slug === slug);
 
   if (!post) {
     notFound();
