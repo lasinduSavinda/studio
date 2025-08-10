@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { Menu, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
@@ -64,32 +65,30 @@ const Header = () => (
     </header>
 );
 
-const BlogPreview = ({ post }: { post: BlogPost }) => (
-    <article className="pb-8 border-b">
-        <h2 className="text-2xl font-semibold mb-2">{post.title}</h2>
-        <p className="text-sm text-muted-foreground mb-4">Published on: {post.publishDate}</p>
-        <div className="space-y-4 text-base md:text-lg text-muted-foreground">
-            {post.summary}
-        </div>
-        <Button variant="link" asChild className="px-0 mt-2">
-            <Link href={`/blog/${post.slug}`}>Read More</Link>
-        </Button>
-    </article>
-);
+export default function BlogPostPage({ params }: { params: { slug: string } }) {
+  const post = blogPosts.find(p => p.slug === params.slug);
 
+  if (!post) {
+    notFound();
+  }
 
-export default function BlogPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <Header />
       <main className="flex-grow p-4 md:p-6 lg:p-8">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold mb-6">Blog</h1>
-          <div className="space-y-8">
-            {blogPosts.map(post => (
-                <BlogPreview key={post.slug} post={post} />
-            ))}
-          </div>
+          <article>
+            <header className="mb-8">
+                <Button variant="link" asChild className="px-0 mb-4 text-muted-foreground">
+                    <Link href="/blog">← Back to Blog</Link>
+                </Button>
+                <h1 className="text-3xl md:text-4xl font-bold mb-2">{post.title}</h1>
+                <p className="text-sm text-muted-foreground">Published on: {post.publishDate}</p>
+            </header>
+            
+            {post.content}
+            
+          </article>
         </div>
       </main>
     </div>
