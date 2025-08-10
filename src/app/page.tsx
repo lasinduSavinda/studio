@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import type { DateRange } from 'react-day-picker';
-import { addDays, format, isWithinInterval, startOfDay } from 'date-fns';
+import { addDays, format, isWithinInterval, startOfDay, addMonths, subMonths, getDaysInMonth, startOfMonth, getDay } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -16,7 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from "@/hooks/use-toast";
 import { symptomAnalyzer, type SymptomAnalyzerInput } from '@/ai/flows/symptom-analyzer';
-import { Bell, Droplets, FileDown, HeartPulse, Moon, Sparkles, Stethoscope, StickyNote, Trash2, Minus, Plus, CalendarIcon } from 'lucide-react';
+import { Bell, Droplets, FileDown, HeartPulse, Moon, Sparkles, Stethoscope, StickyNote, Trash2, Minus, Plus, CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -30,6 +30,8 @@ import {
 } from "@/components/ui/form"
 import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+
 
 type Cycle = { start: Date; end: Date };
 type Note = { date: string; text: string };
@@ -169,6 +171,109 @@ const OnboardingWizard = ({ onComplete }: { onComplete: (cycles: Cycle[], cycleL
     );
 };
 
+const TrackerView = ({ 
+    menstruationDays,
+    fertileDays,
+    ovulationDay,
+    lutealDays,
+    predictedPeriod,
+    selectedDay,
+    onSelectDay
+ } : {
+    menstruationDays: Date[],
+    fertileDays: Date[],
+    ovulationDay?: Date,
+    lutealDays: Date[],
+    predictedPeriod: Date[],
+    selectedDay?: Date,
+    onSelectDay: (day: Date | undefined) => void
+}) => {
+    const [currentMonth, setCurrentMonth] = useState(startOfMonth(selectedDay || new Date()));
+
+    const monthsToDisplay = useMemo(() => {
+        return [subMonths(currentMonth, 1), currentMonth, addMonths(currentMonth, 1)];
+    }, [currentMonth]);
+    
+    const weekDays = ["S", "M", "T", "W", "T", "F", "S"];
+
+    const getDayProps = (day: Date) => {
+        const dateStr = format(day, 'yyyy-MM-dd');
+        const props: { className: string, isSelected: boolean, isToday: boolean } = {
+            className: 'w-8 h-8 flex items-center justify-center rounded-full',
+            isSelected: !!selectedDay && format(selectedDay, 'yyyy-MM-dd') === dateStr,
+            isToday: format(new Date(), 'yyyy-MM-dd') === dateStr,
+        };
+
+        if (menstruationDays.some(d => format(d, 'yyyy-MM-dd') === dateStr)) props.className = cn(props.className, 'bg-pink-500 text-white');
+        else if (predictedPeriod.some(d => format(d, 'yyyy-MM-dd') === dateStr)) props.className = cn(props.className, 'bg-pink-300 text-white');
+        else if (ovulationDay && format(ovulationDay, 'yyyy-MM-dd') === dateStr) props.className = cn(props.className, 'bg-purple-500 text-white');
+        else if (fertileDays.some(d => format(d, 'yyyy-MM-dd') === dateStr)) props.className = cn(props.className, 'bg-yellow-400 text-yellow-800');
+        else if (lutealDays.some(d => format(d, 'yyyy-MM-dd') === dateStr)) props.className = cn(props.className, 'bg-green-500 text-white');
+
+        if (props.isSelected) props.className = cn(props.className, 'ring-2 ring-offset-2 ring-primary');
+        if (props.isToday && !props.className.includes('bg-')) props.className = cn(props.className, 'bg-gray-200');
+
+        return props;
+    };
+
+
+    const renderMonth = (month: Date) => {
+        const daysInMonth = getDaysInMonth(month);
+        const firstDayOfMonth = getDay(startOfMonth(month));
+        const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+        const blanks = Array.from({ length: firstDayOfMonth }, (_, i) => i);
+        return (
+            <div key={format(month, 'yyyy-MM')} className="flex-1">
+                <div className="flex justify-between items-center bg-pink-500 text-white p-2 rounded-t-md">
+                    <Button variant="ghost" size="icon" className="w-8 h-8 hover:bg-pink-600" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
+                        <ChevronLeft className="h-5 w-5" />
+                    </Button>
+                    <h3 className="font-bold">{format(month, 'MMMM yyyy')}</h3>
+                    <Button variant="ghost" size="icon" className="w-8 h-8 hover:bg-pink-600" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
+                        <ChevronRight className="h-5 w-5" />
+                    </Button>
+                </div>
+                <div className="grid grid-cols-7 gap-y-1 p-2 bg-gray-100 text-center text-sm">
+                    {weekDays.map(day => <div key={day} className="font-medium text-gray-600">{day}</div>)}
+                </div>
+                <div className="grid grid-cols-7 gap-y-2 p-2 bg-white rounded-b-md shadow">
+                    {blanks.map(i => <div key={`blank-${i}`}></div>)}
+                    {days.map(day => {
+                        const date = new Date(month.getFullYear(), month.getMonth(), day);
+                        const { className, isSelected } = getDayProps(date);
+                        return (
+                            <button key={day} onClick={() => onSelectDay(date)} className={className}>
+                                {day}
+                            </button>
+                        )
+                    })}
+                </div>
+            </div>
+        )
+    };
+
+    return (
+        <Card className="shadow-lg">
+            <CardHeader>
+                <div className="flex justify-between items-center">
+                    <CardTitle>Your Tracker</CardTitle>
+                    <div className="flex items-center gap-4 text-sm">
+                        <Button variant="ghost" onClick={() => setCurrentMonth(subMonths(currentMonth, 3))}>
+                            <ChevronLeft className="mr-2 h-4 w-4" /> Previous 3 Months
+                        </Button>
+                        <Button variant="ghost" onClick={() => setCurrentMonth(addMonths(currentMonth, 3))}>
+                             Next 3 Months <ChevronRight className="ml-2 h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="flex flex-col lg:flex-row gap-4 p-4">
+                {monthsToDisplay.map(month => renderMonth(month))}
+            </CardContent>
+        </Card>
+    )
+}
+
 export default function Home() {
   const [cycles, setCycles] = useLocalStorage<Cycle[]>('cycles', []);
   const [notes, setNotes] = useLocalStorage<Note[]>('notes', []);
@@ -192,7 +297,7 @@ export default function Home() {
     return Math.round(lengths.reduce((a, b) => a + b, 0) / lengths.length);
   }, [cycles, userCycleLength]);
 
-  const { menstruationDays, fertileDays, ovulationDay, predictedPeriod } = useMemo(() => {
+  const { menstruationDays, fertileDays, ovulationDay, predictedPeriod, lutealDays } = useMemo(() => {
     const menstruationDays = cycles.flatMap(c => {
       const dates = [];
       for (let d = startOfDay(new Date(c.start)); d <= startOfDay(new Date(c.end)); d = addDays(d, 1)) {
@@ -204,6 +309,7 @@ export default function Home() {
     let fertileDays: Date[] = [];
     let ovulationDay: Date | undefined;
     let predictedPeriod: Date[] = [];
+    let lutealDays: Date[] = [];
 
     const lastCycle = cycles.length > 0 ? cycles[cycles.length - 1] : undefined;
     if (lastCycle) {
@@ -211,9 +317,16 @@ export default function Home() {
       ovulationDay = addDays(nextCycleStart, -14);
       fertileDays = Array.from({ length: 6 }, (_, i) => addDays(ovulationDay!, i - 4));
       predictedPeriod = Array.from({ length: 5 }, (_, i) => addDays(nextCycleStart, i));
+      if (ovulationDay) {
+        let day = addDays(ovulationDay, 1);
+        while (day < nextCycleStart) {
+            lutealDays.push(day);
+            day = addDays(day, 1);
+        }
+      }
     }
 
-    return { menstruationDays, fertileDays, ovulationDay, predictedPeriod };
+    return { menstruationDays, fertileDays, ovulationDay, predictedPeriod, lutealDays };
   }, [cycles, cycleLength]);
 
   const handleAddPeriod = () => {
@@ -332,70 +445,47 @@ export default function Home() {
       <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto">
           <div className="lg:col-span-2">
-            <Card className="shadow-lg overflow-hidden">
-              <CardContent className="p-1 md:p-2 flex flex-col lg:flex-row gap-4">
-                <Calendar
-                  mode="single"
-                  selected={selectedDay}
-                  onSelect={setSelectedDay}
-                  defaultMonth={selectedDay}
-                  modifiers={{
-                    menstruation: menstruationDays,
-                    fertile: fertileDays,
-                    ovulation: ovulationDay ? [ovulationDay] : [],
-                    predicted: predictedPeriod,
-                  }}
-                  modifiersClassNames={{
-                    menstruation: 'bg-accent/80 text-accent-foreground',
-                    fertile: 'bg-primary/50 text-primary-foreground',
-                    ovulation: 'bg-primary text-primary-foreground rounded-full',
-                    predicted: 'bg-accent/50 opacity-70',
-                    selected: 'border-2 border-primary rounded-md',
-                  }}
-                  className="rounded-md"
-                />
-                <div className="flex flex-col gap-4 p-4 border-t lg:border-t-0 lg:border-l w-full lg:w-64 flex-shrink-0">
-                    <h3 className="font-bold font-headline">Add Period</h3>
-                    <p className="text-sm text-muted-foreground">Select a start date on the calendar.</p>
-                    <div className="flex flex-col gap-2">
-                      <Button onClick={handleAddPeriod} disabled={!selectedDay}>Log Period Start</Button>
-                      <div className="flex gap-2">
-                        <Button variant="outline" onClick={() => window.open('/export', '_blank')} className="flex-1">
-                            <FileDown className="h-4 w-4 mr-2" />
-                            Download PDF
+            <TrackerView 
+                menstruationDays={menstruationDays}
+                fertileDays={fertileDays}
+                ovulationDay={ovulationDay}
+                lutealDays={lutealDays}
+                predictedPeriod={predictedPeriod}
+                selectedDay={selectedDay}
+                onSelectDay={setSelectedDay}
+            />
+            <Card className="mt-4">
+                <CardHeader>
+                    <CardTitle>Log Your Period</CardTitle>
+                    <CardDescription>Select a start date on the calendar above and click the button to log your period.</CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col sm:flex-row gap-4">
+                    <Button onClick={handleAddPeriod} disabled={!selectedDay} className="flex-1">Log Period Start</Button>
+                    <Button variant="outline" onClick={() => window.open('/export', '_blank')} className="flex-1">
+                        <FileDown className="h-4 w-4 mr-2" />
+                        Download PDF
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="icon">
+                          <Trash2 className="h-4 w-4" />
                         </Button>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="destructive" size="icon">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete all your cycle, symptom, and note data from this browser.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={handleClearAllData}>Yes, delete everything</AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </div>
-                    <Separator />
-                    <h3 className="font-bold font-headline">Legend</h3>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2"><div className="w-4 h-4 rounded-full bg-accent/80"></div> Period</div>
-                      <div className="flex items-center gap-2"><div className="w-4 h-4 rounded-full bg-accent/50 opacity-70"></div> Predicted</div>
-                      <div className="flex items-center gap-2"><div className="w-4 h-4 rounded-full bg-primary/50"></div> Fertile</div>
-                      <div className="flex items-center gap-2"><div className="w-4 h-4 rounded-full bg-primary"></div> Ovulation</div>
-                    </div>
-                </div>
-              </CardContent>
-            </Card>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete all your cycle, symptom, and note data from this browser.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleClearAllData}>Yes, delete everything</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                </CardContent>
+             </Card>
           </div>
 
           <div className="space-y-6">
@@ -453,3 +543,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
