@@ -148,4 +148,110 @@ export const blogPosts: BlogPost[] = [
         </div>
     ),
   },
+  {
+    slug: 'eating-for-a-healthier-cycle',
+    title: 'Eating for a Healthier Cycle: Foods to Embrace and Avoid',
+    publishDate: 'August 8, 2024',
+    summary: (
+      <p>
+        Nutrition plays a vital role in hormonal balance and can significantly impact how you feel throughout your menstrual cycle. By choosing the right foods, you can alleviate common symptoms like cramping, bloating, and mood swings.
+      </p>
+    ),
+    content: (
+        <div className="space-y-4 text-base md:text-lg text-muted-foreground">
+            <p>
+                Nutrition plays a vital role in hormonal balance and can significantly impact how you feel throughout your menstrual cycle. By choosing the right foods during each phase, you can work with your body to alleviate common symptoms and boost your overall well-being.
+            </p>
+
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">During Your Period (Menstrual Phase)</h3>
+            <p>
+                Your body is working hard and losing iron. Focus on nourishing, warming, and iron-rich foods.
+            </p>
+            <ul className="list-disc list-inside space-y-2 pl-4">
+                <li><strong>Foods to Embrace:</strong> Leafy greens (spinach, kale), lean red meat, lentils, beans, and vitamin C-rich foods like citrus fruits and bell peppers to help with iron absorption. Ginger and turmeric tea can help ease cramps.</li>
+                <li><strong>Foods to Limit:</strong> Heavy, greasy foods, excessive caffeine, and alcohol, as they can worsen inflammation and cramping.</li>
+            </ul>
+
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">Before Ovulation (Follicular Phase)</h3>
+            <p>
+                As estrogen levels rise, your energy starts to return. Focus on light, fresh foods that support follicle development.
+            </p>
+             <ul className="list-disc list-inside space-y-2 pl-4">
+                <li><strong>Foods to Embrace:</strong> Lean proteins (chicken, fish), whole grains (oats, quinoa), avocados, nuts, and seeds. Cruciferous vegetables like broccoli and cauliflower can help metabolize estrogen.</li>
+                <li><strong>Foods to Limit:</strong> Continue to keep alcohol intake low as it can interfere with hormonal balance.</li>
+            </ul>
+
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">Around Ovulation</h3>
+            <p>
+                Your energy is at its peak! You need plenty of fiber and antioxidants to support the liver in processing hormones.
+            </p>
+             <ul className="list-disc list-inside space-y-2 pl-4">
+                <li><strong>Foods to Embrace:</strong> Lots of fruits and vegetables, especially those high in antioxidants like berries. Continue with light proteins and complex carbs.</li>
+                 <li><strong>Foods to Limit:</strong> Highly processed or fried foods that can cause inflammation.</li>
+            </ul>
+
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">Before Your Period (Luteal Phase)</h3>
+            <p>
+                This is when PMS symptoms can kick in as progesterone rises and then falls. Focus on foods that stabilize blood sugar and mood.
+            </p>
+             <ul className="list-disc list-inside space-y-2 pl-4">
+                <li><strong>Foods to Embrace:</strong> Complex carbohydrates like sweet potatoes and brown rice to combat cravings. Magnesium-rich foods like dark chocolate, nuts, and seeds can help with mood and sleep. Calcium from yogurt or leafy greens may reduce physical PMS symptoms.</li>
+                <li><strong>Foods to Limit:</strong> Salty foods that contribute to bloating and sugary snacks that lead to energy crashes. Be mindful of caffeine, which can increase anxiety.</li>
+            </ul>
+        </div>
+    ),
+  },
+  {
+    slug: 'exercise-and-your-menstrual-cycle',
+    title: 'Exercise and Your Menstrual Cycle: How to Sync Your Workouts',
+    publishDate: 'August 15, 2024',
+    summary: (
+      <p>
+        Syncing your workouts with the phases of your menstrual cycle can help you maximize your fitness goals, boost energy, and reduce discomfort. Learn how to tailor your exercise routine to your body's natural rhythm.
+      </p>
+    ),
+    content: (
+        <div className="space-y-4 text-base md:text-lg text-muted-foreground">
+            <p>
+                Have you ever noticed that some weeks you feel like you can conquer any workout, while other weeks just getting to the gym feels like a marathon? This isn't just in your head—it's likely linked to the hormonal fluctuations of your menstrual cycle. Syncing your exercise routine to your cycle can help you work with your body, not against it.
+            </p>
+
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">Phase 1: Menstrual Phase (Days 1-7)</h3>
+            <p>
+                Your energy levels are typically at their lowest during your period. This is a time for rest and recovery.
+            </p>
+            <ul className="list-disc list-inside space-y-2 pl-4">
+                <li><strong>Best Workouts:</strong> Gentle movement is key. Think restorative yoga, light walking, stretching, and Pilates. If you feel up to it, light cardio can help ease cramps.</li>
+                <li><strong>Listen to Your Body:</strong> Don't push yourself. If you're feeling fatigued or crampy, it's okay to take a day off.</li>
+            </ul>
+
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">Phase 2: Follicular Phase (Days 1-13)</h3>
+            <p>
+                As your period ends, estrogen and energy levels begin to rise. This is the perfect time to challenge yourself with more intense workouts.
+            </p>
+             <ul className="list-disc list-inside space-y-2 pl-4">
+                <li><strong>Best Workouts:</strong> Your body is primed for high-intensity interval training (HIIT), running, dancing, and strength training. You may find you can lift heavier and push harder during this phase.</li>
+                <li><strong>Try Something New:</strong> With your energy and motivation on the upswing, this is a great time to try a new fitness class or activity.</li>
+            </ul>
+
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">Phase 3: Ovulation Phase (Around Day 14)</h3>
+            <p>
+                Your energy and strength are at their peak, thanks to high levels of estrogen and testosterone. This is when you're likely to perform your best.
+            </p>
+             <ul className="list-disc list-inside space-y-2 pl-4">
+                <li><strong>Best Workouts:</strong> Go for personal records! This is the ideal time for heavy strength training, powerlifting, sprinting, and intense cardio sessions.</li>
+                <li><strong>Be Mindful of Injury:</strong> Some studies suggest a higher risk of injury around ovulation, so make sure your form is solid and you warm up properly.</li>
+            </ul>
+
+            <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">Phase 4: Luteal Phase (Days 15-28)</h3>
+            <p>
+                After ovulation, your energy may start to decline as progesterone rises. In the latter half of this phase, you might experience PMS symptoms.
+            </p>
+             <ul className="list-disc list-inside space-y-2 pl-4">
+                <li><strong>Best Workouts:</strong> In the early luteal phase, you might still feel strong enough for moderately intense workouts. As you get closer to your period, shift towards lower-impact activities like swimming, cycling, yoga, and steady-state cardio.</li>
+                <li><strong>Focus on Form:</strong> As fatigue sets in, it's better to focus on maintaining good technique rather than pushing for intensity.</li>
+            </ul>
+        </div>
+    ),
+  },
 ];
