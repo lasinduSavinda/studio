@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Free Period Tracker Online',
@@ -21,8 +22,20 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
       </head>
-      <body className={cn("min-h-screen bg-background font-body antialiased")} suppressHydrationWarning>
-        {children}
+      <body className={cn("min-h-screen bg-background font-body antialiased flex flex-col")} suppressHydrationWarning>
+        <div className="flex-grow">
+          {children}
+        </div>
+        <footer className="bg-card text-card-foreground border-t">
+          <div className="container mx-auto py-6 px-4 md:px-6 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
+            <p>&copy; {new Date().getFullYear()} Free Period Tracker Online. All Rights Reserved.</p>
+            <nav className="flex gap-4 mt-4 md:mt-0">
+              <Link href="/about" className="hover:text-primary">About Us</Link>
+              <Link href="/privacy" className="hover:text-primary">Privacy Policy</Link>
+              <Link href="/contact" className="hover:text-primary">Contact Us</Link>
+            </nav>
+          </div>
+        </footer>
         <Toaster />
       </body>
     </html>

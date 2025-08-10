@@ -485,7 +485,7 @@ export default function Home() {
 
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground">
+    <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto">
@@ -588,5 +588,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
