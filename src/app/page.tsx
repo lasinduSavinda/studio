@@ -394,14 +394,19 @@ export default function Home() {
     setIsClient(true);
   }, []);
 
-  // Initialize Adsense
+  // Initialize Adsense with a delay to ensure the container has non-zero width
   useEffect(() => {
     if (isClient) {
-        try {
-            ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
-        } catch (e) {
-            console.error("Adsense error", e);
-        }
+        const timer = setTimeout(() => {
+            try {
+                if (typeof window !== "undefined") {
+                    ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+                }
+            } catch (e) {
+                console.error("Adsense error", e);
+            }
+        }, 300); // 300ms delay to allow layout to settle
+        return () => clearTimeout(timer);
     }
   }, [isClient]);
 
@@ -634,10 +639,10 @@ export default function Home() {
              </Card>
              
              {/* Ad Unit */}
-             <div className="mt-8 flex justify-center w-full">
+             <div className="mt-8 flex justify-center w-full min-h-[100px]">
                 <ins
                     className="adsbygoogle"
-                    style={{ display: 'block' }}
+                    style={{ display: 'block', minWidth: '250px', minHeight: '90px' }}
                     data-ad-client="ca-pub-9204801617185567"
                     data-ad-slot="1180551113"
                     data-ad-format="auto"
