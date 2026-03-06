@@ -394,6 +394,17 @@ export default function Home() {
     setIsClient(true);
   }, []);
 
+  // Initialize Adsense
+  useEffect(() => {
+    if (isClient) {
+        try {
+            ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+        } catch (e) {
+            console.error("Adsense error", e);
+        }
+    }
+  }, [isClient]);
+
   const cycleLength = useMemo(() => {
     if (userCycleLength) return userCycleLength;
     if (cycles.length < 2) return 28;
@@ -621,6 +632,18 @@ export default function Home() {
                     </AlertDialog>
                 </CardContent>
              </Card>
+             
+             {/* Ad Unit */}
+             <div className="mt-8 flex justify-center w-full">
+                <ins
+                    className="adsbygoogle"
+                    style={{ display: 'block' }}
+                    data-ad-client="ca-pub-9204801617185567"
+                    data-ad-slot="1180551113"
+                    data-ad-format="auto"
+                    data-full-width-responsive="true"
+                />
+            </div>
           </div>
 
           <div className="space-y-6">
