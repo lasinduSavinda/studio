@@ -31,6 +31,8 @@ export default function RootLayout({
           crossOrigin="anonymous"
           strategy="afterInteractive"
         />
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9204801617185567"
+     crossorigin="anonymous"></script>
       </head>
       <body className={cn("min-h-screen bg-background font-body antialiased flex flex-col")} suppressHydrationWarning>
         {/* Google Analytics */}
