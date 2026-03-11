@@ -24,15 +24,6 @@ export default function RootLayout({
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9204801617185567"
      crossorigin="anonymous"></script>
         <meta name="msvalidate.01" content="F9A98516248814EDA69BD8C7967EB05F" />
-        <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-45KR3E7V2J"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-45KR3E7V2J');
-</script>
       </head>
       <body className={cn("min-h-screen bg-background font-body antialiased flex flex-col")} suppressHydrationWarning>
         <div className="flex-grow">
