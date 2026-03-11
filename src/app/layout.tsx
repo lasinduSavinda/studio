@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: 'Free Period Tracker Online',
