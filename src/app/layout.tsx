@@ -40,6 +40,7 @@ export default function RootLayout({
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9204801617185567" crossOrigin="anonymous"></script>
 
         <meta name="msvalidate.01" content="F9A98516248814EDA69BD8C7967EB05F" />
+        <meta name="google-site-verification" content="YoDlSalmW62KEuqIevNcBts3_ojJ-YQq7i6VXqljGXs" />
       </head>
 
       <body className={cn("min-h-screen bg-background font-body antialiased flex flex-col")} suppressHydrationWarning>
