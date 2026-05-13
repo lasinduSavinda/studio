@@ -42,6 +42,7 @@ export default function RootLayout({
         <meta name="msvalidate.01" content="F9A98516248814EDA69BD8C7967EB05F" />
         <meta name="google-site-verification" content="YoDlSalmW62KEuqIevNcBts3_ojJ-YQq7i6VXqljGXs" />
         <meta name="monetag" content="dae1dbecfd14a91524779ce73229a929" />
+        <script src="https://quge5.com/88/tag.min.js" data-zone="239041" async data-cfasync="false"></script>
       </head>
 
       <body className={cn("min-h-screen bg-background font-body antialiased flex flex-col")} suppressHydrationWarning>
