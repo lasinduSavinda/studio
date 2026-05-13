@@ -19,7 +19,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta name="monetag" content="dae1dbecfd14a91524779ce73229a929">
         {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-45KR3E7V2J"
@@ -42,6 +41,7 @@ export default function RootLayout({
 
         <meta name="msvalidate.01" content="F9A98516248814EDA69BD8C7967EB05F" />
         <meta name="google-site-verification" content="YoDlSalmW62KEuqIevNcBts3_ojJ-YQq7i6VXqljGXs" />
+        <meta name="monetag" content="dae1dbecfd14a91524779ce73229a929" />
       </head>
 
       <body className={cn("min-h-screen bg-background font-body antialiased flex flex-col")} suppressHydrationWarning>
